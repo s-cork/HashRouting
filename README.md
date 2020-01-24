@@ -88,6 +88,18 @@ set_url_hash('home')
 routing.load_form(Home, 'home')
 ```
 
+With parameters:
+```python
+# option 1
+set_url_hash(f'article?id={self.item['id']}')
+
+# option 2
+routing.load_form(ArticleForm, id=3, item=self.item)
+# additional properties can be passed using load_form
+```
+
+There is `routing.replace_current_url` - discussion below  - check out the methods in `HashRouting.routing`
+
 
 ## Notes
 
@@ -147,7 +159,7 @@ ___
 
 You can set each route form to have a title parameter which will change the tab title of the window
 
-If you do not provide a title then the tab title will be the default title provided by anvile
+If you do not provide a title then the tab title will be the default title provided by anvil
 
 **Examples**:
 
@@ -198,7 +210,7 @@ ___
 
 ## Preventing a Form from Closing
 
-if you return a value in the on_navigation method you will stop the form from loading e.g.
+if you return a value in the on_navigation method you will stop the current form from loading e.g.
 
 ```python
   def on_navigation(self, url_hash, url_pattern, url_dict):
@@ -220,7 +232,10 @@ ___
 You can pass properties to a form using the `routing.load_form()` method e.g.
 
 ```python
-routing.load_form(Article,id=3,item=item)
+
+def article_link_click(self, **event_args):
+    routing.load_form(Article,id=3,item=item)
+    # if your RouteForm has required keys then you should provide these as kwargs
 
 ```
 
@@ -235,4 +250,113 @@ e.g.
 def button_click(self,**event_args):
   alert(ArticleForm(route=False))  
   #setting route = False stops the Route Form using the routing module...
+```
+
+___
+## I have a login form how to do I do I work that?
+
+```python
+@routing.main_router
+class MainForm(MainFormTemplate):
+  def __init__(self, **properties):
+    # Set Form properties and Data Bindings.
+    self.init_components(**properties)
+
+    user = anvil.users.get_user()
+    if user is None:
+      routing.replace_current_url('login')
+    # after the init method the main router will route to the login form
+
+```
+
+**Login Form**
+
+```python
+@routing.route('login')
+class LoginForm(LoginFormTemplate):
+  def __init__(self, **properties):
+    # Set Form properties and Data Bindings.
+    self.init_components(**properties)
+    # Any code you write here will run when the form opens.
+    
+  def form_show(self, **event_args):
+    """This method is called when the column panel is shown on the screen"""
+    user = anvil.users.get_user()
+    while not user:
+      user = anvil.users.login_with_form()
+    
+    routing.replace_current_url('', redirect=True)
+    # '' replaces 'login' in the url history and redirects to the HomeForm
+
+```
+
+
+## I have a page that is deleted - how do I remove it from the cache?
+
+```python
+
+def trash_link_click(self, **event_args):
+  """called when trash_link is clicked removes the """
+  self.item.delete()  # table row
+  routing.remove_from_cache(self.url_hash) # self.url_hash provided by the @routing.route class decorator
+  routing.routing.replace_current_url('articles', redirect=True)
+
+```
+
+And in the init method - you will want something like:
+
+```python
+@routing.route('article', keys=['id'], title='Article-{id}')
+class Article(ArticleTemplate):
+  def __init__(self, **properties):
+    try:
+      self.item = anvil.server.call('get_article_by_id',self.url_dict['id'])
+    except:  
+      routing.replace_current_url('articles', redirect=True)
+```
+
+## Form Show is important
+
+since the forms are loaded from cache you may want to use the form_show events if there is a state change
+
+e.g. when that article was deleted we wouldn't want the deleted article to show up on the repeatingPanel
+
+so perhaps:
+```python
+@routing.route('articles')
+class ListArticlesForm(ListArticlesFormTemplate):
+  def __init__(self, **properties):
+    # Set Form properties and Data Bindings.
+    self.init_components(**properties)
+    self.repeating_panel_1.items = anvil.server.call('get_articles')
+
+    # Any code you write here will run when the form opens.
+
+  def form_show(self, **event_args):
+    """This method is called when the column panel is shown on the screen"""
+    self.repeating_panel_1.items = anvil.server.call('get_articles')
+
+```
+
+**An alternative approach to the above scenario:**
+
+use `routing.load_form` and set `load_from_cache=False`
+
+That way you wouldn't need to utilise the show event of the `ArticlesForm`
+
+
+```python
+@routing.route('article', keys=['id'], title='Article-{id}')
+class Article(ArticleTemplate):
+  def __init__(self, **properties):
+    try:
+      self.item = anvil.server.call('get_article_by_id',self.url_dict['id'])
+    except:  
+      routing.load_form(ListArticlesForm, replace_current_url=True, load_from_cache=False)
+
+  def trash_link_click(self, **event_args):
+    """called when trash_link is clicked removes the """
+    self.item.delete()  # table row
+    routing.remove_from_cache(self.url_hash) # self.url_hash provided by the @routing.route class decorator
+    routing.load_form(ListArticlesForm, replace_current_url=True, load_from_cache=False)  # a new instance of ListArticlesForm will be loaded
 ```
