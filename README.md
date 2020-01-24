@@ -8,9 +8,10 @@ HashRouting - a dependancy for anvil.works that allows navigation in apps
 
 This is the startup form, the one loaded when the app starts. It contains the header, the navigation bar and a content panel where all the other forms will be loaded during the life of the app.
 
-The Main form is not the home form. The Main form has no content, only has navigation, header and infrastructure to show all the other forms.
+The Main form is **not** the home form. The Main form has no content, only has navigation, header and infrastructure to show all the other forms.
 
-- Import the routing module, all the forms used by the app and add the decorator
+- Import the routing module, all the forms used by the app
+- and add the decorator: `@routing.main_router`
 
 ```python
     from HashRouting import routing
@@ -23,16 +24,16 @@ The Main form is not the home form. The Main form has no content, only has navig
     class Main(MainTemplate):
 ```
 
-## All forms
+## All Route forms
 
 These are all the forms that are loaded inside the main form's content panel.
 
 - Import the routing module and add the decorator that defines the page name and the query string parameters. This shows how to link a form to the URL `<appdomain.com>#article?id=123`:
 ```python
-    from HashRouting import routing
+from HashRouting import routing
 
-    @routing.route('article', keys=['id'])
-    class Home(HomeTemplate):
+@routing.route('article', keys=['id'])
+class Article(ArticleTemplate):
 ```
 
 ## Home form
@@ -41,10 +42,10 @@ The Home form is the form that appears in the content area of the Main form.
 
 - Import the routing module and add the decorator with the page name set to an empty string
 ```python
-    from HashRouting import routing
+from HashRouting import routing
 
-    @routing.route('')
-    class Home(HomeTemplate):
+@routing.route('')
+class Home(HomeTemplate):
 ```
 
 ## Error form
@@ -65,13 +66,14 @@ Follow these steps to create an error form that shows an error message and a but
 from HashRouting import routing
 
 @routing.error_form
-class error_form(ErrorFormTemplate):
+class ErrorForm(ErrorFormTemplate):
 ```
 
 ## Navigation
 
-It is important to never use the typical method to navigate when implementing routing
+It is important to never use the typical method to navigate when implementing `HashRouting`
 ```python
+# Banned
 get_open_form().content_panel.clear()
 get_open_form().content_panel.add_component(Home())
 # This will result in an Exception('Form1 is a route form and was not loaded from routing')
@@ -141,6 +143,30 @@ You can also call `routing._clear_cache()` to remove the cache upon logging out.
 
 ___
 
+## Tab Title
+
+You can set each route form to have a title parameter which will change the tab title of the window
+
+If you do not provide a title then the tab title will be the default title provided by anvile
+
+**Examples**:
+
+```python
+@routing.route('home', title='Home | RoutingExample')
+@routing.route('',     title='Home | RoutingExample')
+class Home(HomeTemplate):
+```
+
+```python
+@routing.route('article', keys=['id'], title="Article-{id} | RoutingExample")
+class ArticleForm(ArticleFormTemplate):
+
+# Think `f strings` without the f
+# Anything in curly braces should be an item from `keys`
+```
+
+
+___
 ## Selected Links
 
 To use the Material Design role `'selected'` for navigation you can add an `on_navigation` method to your `MainForm`
@@ -198,3 +224,15 @@ routing.load_form(Article,id=3,item=item)
 
 ```
 
+___
+## Sometimes my Route Form is a Route Form sometimes it is a Component
+
+No problem... use the parameter `route=False` to avoid typical routing behaviour
+
+e.g.
+
+```python
+def button_click(self,**event_args):
+  alert(ArticleForm(route=False))  
+  #setting route = False stops the Route Form using the routing module...
+```
