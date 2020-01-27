@@ -20,8 +20,8 @@ Examples |`"blog.anvil.app/#articles"`|`"blog.anvil.app/#article?id=4"`
  ---|---|---
 `url_hash`| `"articles"` | `"article?id=4"`
 `url_pattern`| `"articles"` | `"article"`
-`url_dict`| `{}` | `"{'id':'4'}"`
-`url_keys`| `[]` | `"['id']"`
+`url_dict`| `{}` | `{'id':'4'}`
+`url_keys`| `[]` | `['id']`
 
 
 ## `MainForm`
