@@ -16,11 +16,7 @@ URL|Description
 `blog.anvil.app/#tags`|Show the list of tags
 `blog.anvil.app/#blog?id=10`|Show the blog by ID
 
----
-
-Terminology
-
-term |`"blog.anvil.app/#articles"`|`"blog.anvil.app/#article?id=4"`
+Examples |`"blog.anvil.app/#articles"`|`"blog.anvil.app/#article?id=4"`
  ---|---|---
 `url_hash`| `"articles"` | `"article?id=4"`
 `url_pattern`| `"articles"` | `"article"`
