@@ -3,12 +3,35 @@ HashRouting - a dependancy for anvil.works that allows navigation in apps
 
 
 ---
+## Introduction
 
-## Main form
+An Anvil app is a Single Page App so when the user navigates through the app pages the URL does not change. The part of the URL before the `#` is used by the server to identify the app, while the part following the `#`, known as hash, is never sent to the server, is used only by the browser. 
+
+The routing module uses the hash to define unique URLs for each form, page or whatever your app is showing. Here are a few examples of URLs pointing to different forms of the same app, or displaying different data on the same form:
+
+URL|Description
+---|---
+`blog.anvil.app/#`|Show the app home page
+`blog.anvil.app/#blogs`|Show the list of blogs
+`blog.anvil.app/#tags`|Show the list of tags
+`blog.anvil.app/#blog?id=10`|Show the blog by ID
+
+---
+
+Terminology
+ |`"blog.anvil.app/#articles"`|`"blog.anvil.app/#article?id=4"`
+ ---|---|---
+`url_hash`| `"articles"` | `"article?id=4"`
+`url_pattern`| `"articles"` | `"article"`
+`url_dict`| `{}` | `"{'id':'4'}"`
+`url_keys`| `[]` | `"['id']"`
+
+
+## `MainForm`
 
 This is the startup form, the one loaded when the app starts. It contains the header, the navigation bar and a content panel where all the other forms will be loaded during the life of the app.
 
-The Main form is **not** the home form. The Main form has no content, only has navigation, header and infrastructure to show all the other forms.
+The `MainForm` is **not** the `HomeForm`. The Main form has no content, only has navigation, header and infrastructure to show all the other forms.
 
 - Import the routing module, all the forms used by the app
 - and add the decorator: `@routing.main_router`
@@ -24,17 +47,27 @@ The Main form is **not** the home form. The Main form has no content, only has n
     class Main(MainTemplate):
 ```
 
-## All Route forms
+## All Route Forms
 
-These are all the forms that are loaded inside the main form's content panel.
+These are all the forms that are loaded inside the `MainForm`'s `content_panel`.
 
 - Import the routing module and add the decorator that defines the page name and the query string parameters. This shows how to link a form to the URL `<appdomain.com>#article?id=123`:
 ```python
 from HashRouting import routing
 
-@routing.route('article', keys=['id'])
+@routing.route('article', url_keys=['id'])
 class Article(ArticleTemplate):
 ```
+
+Or
+
+```python
+from HashRouting import routing
+
+@routing.route('article')
+class Article(ArticleTemplate):
+```
+
 
 ## Home form
 
@@ -54,13 +87,6 @@ This is the form that is shown when the url refers to a page that does not exist
 Follow these steps to create an error form that shows an error message and a button to navigate back to the home page:
 
 - Create a form with a label `Sorry, this page does not exist`
-
-**Optional**
-- Add a button with this code on the `button_1_click` method:
-
-```python
-    set_url_hash('')
-```
 - Import the routing module and add the decorator `@routing.error_form`:
 ```python
 from HashRouting import routing
@@ -82,10 +108,13 @@ get_open_form().content_panel.add_component(Home())
 **Instead**
 ```python
 # option 1
-set_url_hash('home')
+set_url_hash('home') # anvil's build in method
 
 # option 2
-routing.load_form(Home, 'home')
+routing.set_url_hash('home') #routing's set_url_method has some bonus features... 
+
+# option 2
+routing.load_form(Home)
 ```
 
 With parameters:
@@ -94,12 +123,19 @@ With parameters:
 set_url_hash(f'article?id={self.item['id']}')
 
 # option 2
+routing.set_url_hash(f'article?id={self.item['id']}')
+
+# option 3
+routing.set_url_hash(url_pattern='article', url_dict={'id':self.item['id']})
+
+# option 4
 routing.load_form(ArticleForm, id=3, item=self.item)
-# additional properties can be passed using load_form
+# additional properties can be passed using load_form like the item property
 ```
 
-There is `routing.replace_current_url` - discussion below  - check out the methods in `HashRouting.routing`
+`routing.set_url_hash` and `routing.load_form`  - have some additional kwargs that can be passed - some examples below.
 
+___
 
 ## Notes
 
@@ -123,7 +159,7 @@ This is the correct way:
 It is possible to define optional parameters by adding multiple decorators, e.g. one with and one without the key. Here is an example that allows to use the `home page` with the default empty string and with one optional `search` parameter:
 ```python
     @routing.route('')
-    @routing.route('', keys='search')
+    @routing.route('', keys=['search'])
     class Form1(Form1Template):
       def __init__(self, **properties):
         self.init_components(**properties)
@@ -136,22 +172,34 @@ It is possible to change the current url without adding the new url to the brows
 ```python
     def search_click(self, **event_args):
       if self.search_terms.text:
-        routing.replace_current_url(f'?search={self.search_terms.text}', replace_in_history=False)
+        routing.set_url_hash(f'?search={self.search_terms.text}', 
+                             replace_current_url=True
+                             set_in_history=False,
+                             redirect=False)
       else:
-        routing.replace_current_url(f'',  replace_in_history=False)
+        routing.set_url_hash('',
+                             replace_in_history=False,
+                             set_in_history=False,
+                             redirect=False
+                             )
       self.search(self.search_terms.text)
 ```
 
-in the `routing.replace_current_url` method,  `replace_in_history=True` is the defualt
-
-You can also do:
-`routing.replace_current_url(url_hash, redirect=True)` which will force routing to navigate to url_hash provided - by default `redirect=False`
+in the `routing.set_url_hash` method, defaults are as follows:
+```python
+"""
+replace_current_url = False # Set to True if you want the url change to happen 'in place' rather than as a new history item
+set_in_history      = True  # Set to False if you don't want the new Url in the browser history
+redirect            = True  # Set to False if you don't wish to navigate away from current Form
+load_from_cache     = True  # Set to False if you want the new URL to NOT load from cache
+"""
+```
 
 ---
 
 **Security issue**: You log in, open a form with some data, go to the next form, log out, go back 3 steps and you see the cached stuff that was there when you were logged in.
-**Solution**: When a form shows sensitive data it should always check for user permission in the `form_show` event, which is triggered when a cached form is shown.
-You can also call `routing._clear_cache()` to remove the cache upon logging out.
+**Solution 1**: When a form shows sensitive data it should always check for user permission in the `form_show` event, which is triggered when a cached form is shown.
+**Solution 2**: Call `routing._clear_cache()` to remove the cache upon logging out.
 
 ___
 
@@ -170,12 +218,13 @@ class Home(HomeTemplate):
 ```
 
 ```python
-@routing.route('article', keys=['id'], title="Article-{id} | RoutingExample")
+@routing.route('article', url_keys=['id'], title="Article-{id} | RoutingExample")
 class ArticleForm(ArticleFormTemplate):
-
-# Think `f strings` without the f
-# Anything in curly braces should be an item from `keys`
 ```
+
+- Think `f strings` without the f
+- Anything in curly braces should be an item from url_keys
+
 
 
 ___
@@ -196,34 +245,41 @@ class MainForm(MainFormTemplate):
     self.articles_link.tag.url_hash   = 'articles'
 
 
-  def on_navigation(self, url_hash, url_pattern, url_dict):
+  def on_navigation(self, **nav_args):
     # this method is called whenever routing provides navigation behaviour
     # url_hash, url_pattern, url_dict are provided by the main_router class decorator
     for link in self.links:
-      if link.tag.url_hash == url_hash:
+      if link.tag.url_hash == nav_args.get('url_hash'):
         link.role = 'selected'
       else:
         link.role = 'default'
 ```
+```python
+nav_args = {'url_hash':    url_hash, 
+            'url_pattern': url_hash, 
+            'url_dict':    url_dict, 
+            'unload_form': form_that_was_unloaded
+            }
+```
 
 ___
 
-## Preventing a Form from Closing
+## Preventing a Form from Unloading
 
-if you return a value in the on_navigation method you will stop the current form from loading e.g.
+Create a method in a route form called `before_unload` 
+To prevent Unloading return a value
 
 ```python
-  def on_navigation(self, url_hash, url_pattern, url_dict):
-    # this method is called whenever routing provides navigation behaviour
-    # url_hash, url_pattern, url_dict are provided by the main_router class decorator
-    current_form = routing._current_form  #private attribute use with care...
-    if current_form.url_pattern == 'edit-article':
-      if confirm('are you sure you want to close this form?'):
-        pass
-      else:
-        routing.replace_current_url(current_form.url_hash)  
-        return 'STOP'
+  def before_unload(self):
+    # this method is called when the form is about to be unloaded from the content_panel
+    if confirm('are you sure you want to close this form?'):
+      pass
+    else: 
+      return 'STOP'
 ```
+
+NB: Use this method with caution. 
+Only use if you need to prevent unload behaviour. Otherwise the `form_hide` event should work just fine. 
 
 ___
 
@@ -234,8 +290,9 @@ You can pass properties to a form using the `routing.load_form()` method e.g.
 ```python
 
 def article_link_click(self, **event_args):
-    routing.load_form(Article,id=3,item=item)
-    # if your RouteForm has required keys then you should provide these as kwargs
+    routing.load_form(Article, id=3, item=self.item)
+    # if your RouteForm has required keys then you should provide these as kwargs 
+    # or they the key could also be a key in item 
 
 ```
 
@@ -264,8 +321,11 @@ class MainForm(MainFormTemplate):
 
     user = anvil.users.get_user()
     if user is None:
-      routing.replace_current_url('login')
-    # after the init method the main router will route to the login form
+      routing.set_url_hash('login',
+                           replace_current_url=True,
+                           redirect=False
+                           )
+    # after the init method the main router will navigate to the login form
 
 ```
 
@@ -285,7 +345,10 @@ class LoginForm(LoginFormTemplate):
     while not user:
       user = anvil.users.login_with_form()
     
-    routing.replace_current_url('', redirect=True)
+    routing.remove_from_cache(self.url_hash)  # prevents the login form loading from cache in the future... 
+    routing.set_url_hash('', 
+                         replace_current_url=True,
+                         redirect=True)
     # '' replaces 'login' in the url history and redirects to the HomeForm
 
 ```
@@ -299,7 +362,9 @@ def trash_link_click(self, **event_args):
   """called when trash_link is clicked removes the """
   self.item.delete()  # table row
   routing.remove_from_cache(self.url_hash) # self.url_hash provided by the @routing.route class decorator
-  routing.routing.replace_current_url('articles', redirect=True)
+  routing.set_url_hash('articles', 
+                        replace_current_url=True,
+                      )
 
 ```
 
@@ -312,7 +377,7 @@ class Article(ArticleTemplate):
     try:
       self.item = anvil.server.call('get_article_by_id',self.url_dict['id'])
     except:  
-      routing.replace_current_url('articles', redirect=True)
+      routing.set_url_hash('articles', replace_current_url=True)
 ```
 
 ## Form Show is important
@@ -340,10 +405,34 @@ class ListArticlesForm(ListArticlesFormTemplate):
 
 **An alternative approach to the above scenario:**
 
-use `routing.load_form` and set `load_from_cache=False`
+set `load_from_cache=False`
 
 That way you wouldn't need to utilise the show event of the `ArticlesForm`
 
+
+```python
+@routing.route('article', keys=['id'], title='Article-{id}')
+class Article(ArticleTemplate):
+  def __init__(self, **properties):
+    try:
+      self.item = anvil.server.call('get_article_by_id',self.url_dict['id'])
+    except:  
+      routing.set_url_hash('articles', replace_current_url=True, load_from_cache=False)
+
+  def trash_link_click(self, **event_args):
+    """called when trash_link is clicked removes the """
+    self.item.delete()  # table row
+    routing.remove_from_cache(self.url_hash) # self.url_hash provided by the @routing.route class decorator
+    routing.set_url_hash('articles', 
+                         replace_current_url=True, 
+                         load_from_cache=False)  
+```
+
+**Additional alternative approach to the above scenario:**
+
+use `routing.load_form` instead of `routing.set_url_hash` 
+
+That way you wouldn't need to utilise the show event of the `ArticlesForm`
 
 ```python
 @routing.route('article', keys=['id'], title='Article-{id}')
@@ -358,5 +447,7 @@ class Article(ArticleTemplate):
     """called when trash_link is clicked removes the """
     self.item.delete()  # table row
     routing.remove_from_cache(self.url_hash) # self.url_hash provided by the @routing.route class decorator
-    routing.load_form(ListArticlesForm, replace_current_url=True, load_from_cache=False)  # a new instance of ListArticlesForm will be loaded
+    routing.load_form(ListArticlesForm, 
+                      replace_current_url=True, 
+                      load_from_cache=False)  
 ```
