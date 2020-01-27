@@ -19,6 +19,7 @@ URL|Description
 ---
 
 Terminology
+
  |`"blog.anvil.app/#articles"`|`"blog.anvil.app/#article?id=4"`
  ---|---|---
 `url_hash`| `"articles"` | `"article?id=4"`
