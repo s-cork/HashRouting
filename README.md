@@ -191,7 +191,7 @@ class Form1(Form1Template):
     self.search_terms.text = self.url_dict.get('search', '')
 ```
 
-Perhaps your form displays a different `item` depending on the `url_hash`:
+Perhaps your form displays a different `item` depending on the `url_pattern`/`url_hash`:
 
 ```python
 @routing.route('articles')
@@ -199,7 +199,7 @@ Perhaps your form displays a different `item` depending on the `url_hash`:
 class ListItems(ListItemsTemplate):
     def __init__(self, **properties):
     self.init_components(**properties)
-    self.item = anvil.server.call(f'get_{self.url_hash}')  #url hash is provided by the routing module
+    self.item = anvil.server.call(f'get_{self.url_pattern}')  # self.url_pattern is provided by the routing module
 ```
 
 ---
