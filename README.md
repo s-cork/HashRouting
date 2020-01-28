@@ -175,7 +175,7 @@ class Form1(Form1Template):
 
 **Solution 1**: When a form shows sensitive data it should always check for user permission in the `form_show` event, which is triggered when a cached form is shown.
 
-**Solution 2**: Call `routing._clear_cache()` to remove the cache upon logging out.
+**Solution 2**: Call `routing.clear_cache()` to remove the cache upon logging out.
 
 ---
 
