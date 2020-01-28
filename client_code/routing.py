@@ -250,16 +250,18 @@ def get_url_dict(url_hash=None):
   return get_url_components(url_hash=url_hash)[2]
 
 
-def remove_from_cache(url_hash):
+def remove_from_cache(url_hash=None, *, url_pattern=None, url_dict=None):
   """useful if you don't want a form to load from the cache or say the hash represents a page that gets deleted
   gotcha: cannot be called from the init function of the the same form in cache
   because the form has not been added to the cache until it has loaded - try putthing it in the form show even instead
   """
+  url_hash = _process_url_arguments(url_hash, url_pattern=url_pattern, url_dict=url_dict)[0]
   logger.print(f'removing {url_hash} from cache')
-  try:
+  if url_hash in _cache:
     del _cache[url_hash]
-  except:
-    raise KeyError(f'{url_hash} was not found in cache - maybe the form was yet to load...')
+  else:
+    logger.print(f"*warning* {url_hash} was not found in cache - maybe the form was yet to load")
+
 
 
 def add_to_cache(url_hash, form):
@@ -305,24 +307,15 @@ def set_url_hash(url_hash=None, *, #the remaining are keyword only arguments
                       = False - the url_hash is removed from _cache
   """
   if not set_in_history and not replace_current_url:
-    raise Exception('cannot do set_in_history=False and replace_current_url=False\n You are trying to push a new url but not adding to the history stack')
+    raise Exception('cannot do set_in_history=False and replace_current_url=False\nPushing new url without adding to history stack is impossible')
   
-  ## check and set_up the url_hash, url_pattern and url_dict
-  if url_dict is not None and url_pattern is None:
-    raise TypeError('if you provide a url_dict you must provide a url_pattern as a keyword argument url_pattern=')
-  if url_hash is None and url_pattern is None:
-    url_hash = '' #default behaviour should be an empty string
-  elif url_hash is None:
-    url_dict = {} if url_dict is None else url_dict
-    url_hash = _get_url_hash(url_pattern, url_dict)
-  url_hash, url_pattern, url_dict = get_url_components(url_hash)  # will convert to a string
+  ### process the url_arguments
+  url_hash, url_pattern, url_dict = _process_url_arguments(url_hash, url_pattern=url_pattern, url_dict=url_dict)
     
   # remove from cache  
   if not load_from_cache:
-    try:
-      remove_from_cache(url_hash)
-    except:
-      pass
+    remove_from_cache(url_hash)
+
   
   if       set_in_history and not replace_current_url:
     logger.print(f"setting url_hash to: #{url_hash}, adding to top of history stack")
@@ -444,6 +437,21 @@ def _get_path(form, url_pattern, url_keys):
         return path
     raise KeyError(f'{form.__name__} has no decorator with url_pattern={url_pattern} and url_keys={url_keys}')
 
+
+def _process_url_arguments(url_hash=None, *, url_pattern=None, url_dict=None):
+  """ 
+  check and set_up the url_hash, url_pattern and url_dict
+  """
+  if url_dict is not None and url_pattern is None:
+    raise TypeError('if you provide a url_dict you must provide a url_pattern as a keyword argument url_pattern=')
+  if url_hash is None and url_pattern is None:
+    url_hash = '' #default behaviour should be an empty string
+  elif url_hash is None:
+    url_dict = {} if url_dict is None else url_dict
+    url_hash = _get_url_hash(url_pattern, url_dict)
+  url_hash, url_pattern, url_dict = get_url_components(url_hash)  # will convert to a string
+  return url_hash, url_pattern, url_dict
+
     
 def set_warning_before_unload(warning=True):
   if not isinstance(warning, bool):
@@ -452,3 +460,4 @@ def set_warning_before_unload(warning=True):
 
 def replace_current_url(url_hash, *args, redirect=False, set_in_history=True, **kwargs):
   raise AttributeError(f'replace_current_url depriciated, use: \nrouting.set_url_hash({url_hash}, \nreplace_current_url=True, \nredirect={redirect}, \nset_in_history={set_in_history})')
+
