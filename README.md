@@ -117,7 +117,7 @@ set_url_hash('home') # anvil's built in method
 # option 2
 routing.set_url_hash('home') #routing's set_url_method has some bonus features... 
 
-# option 2
+# option 3
 routing.load_form(Home)
 ```
 
