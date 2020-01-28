@@ -82,7 +82,7 @@ class Home(HomeTemplate):
 
 ---
 
-## Error form
+## Error form (Optional)
 
 This is the form that is shown when the `url_hash` refers to a page that does not exist or the query string does not match the `url_keys` listed in the decorator. 
 Follow these steps to create an error form that shows an error message:
