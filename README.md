@@ -360,7 +360,7 @@ def article_link_click(self, **event_args):
     routing.load_form(Article, id=3, item=self.item)
     # if your RouteForm has required keys then you should provide these as kwargs 
     # nb the key id could also be a key in self.item in which case
-    # routing.load_form(Article, item=self.item) is sufficient (but may be slower to load)
+    # routing.load_form(Article, item=self.item) is sufficient (but may be slower to load if item is a LiveObjectProxy [Table Row])
 
 ```
 
