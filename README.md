@@ -485,7 +485,7 @@ class ListArticlesForm(ListArticlesFormTemplate):
 
 set `load_from_cache=False`
 
-That way you wouldn't need to utilise the show event of the `ArticlesForm`
+That way you wouldn't need to utilise the show event of the `ListArticlesForm`
 
 
 ```python
