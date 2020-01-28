@@ -448,8 +448,8 @@ class Article(ArticleTemplate):
     try:
       self.item = anvil.server.call('get_article_by_id', self.url_dict['id'])
     except:  
-      raise Exception('This article does not exist or has been deleted')
       routing.set_url_hash('articles', replace_current_url=True)
+      raise Exception('This article does not exist or has been deleted')
       
 ```
 
