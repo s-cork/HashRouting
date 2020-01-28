@@ -457,7 +457,7 @@ class Article(ArticleTemplate):
 
 ## Form Show is important
 
-since the forms are loaded from cache you may want to use the form_show events if there is a state change
+since the forms are loaded from cache you may want to use the `form_show` events if there is a state change
 
 
 ### Example 1
