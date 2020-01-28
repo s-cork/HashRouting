@@ -123,6 +123,7 @@ def main_router(Cls):
       else:
         raise Exception('bad load_form called')
       if _current_form is _cache[url_hash]: # this accounts for a slow form load and a super quick navigation change!
+        url_hash, url_pattern, url_dict = get_url_components() #just incase they changed!
         _cache[url_hash].url_hash    = url_hash
         _cache[url_hash].url_pattern = url_pattern
         _cache[url_hash].url_dict    = url_dict
