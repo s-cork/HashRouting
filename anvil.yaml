@@ -8,21 +8,26 @@ runtime_options: {version: 2, server_version: python2-sandbox, client_version: '
 metadata: {}
 startup_form: null
 native_deps: {head_html: "<script>\n// need to think about what happens if we visit\
-    \ a differnent web page then return to this page!\nvar defaultTitle = $(\"title\"\
-    ).text()\nvar currentPosition = 0\nvar undo = 0\n\nwindow.onpopstate = onPopState;\n\
-    window.onpageshow = setUp;\nwindow.onbeforeunload = onBeforeUnload;\n  \n// App\
-    \ Unload Behaviour  \nfunction onBeforeUnload(event) {\n  // Cancel the event\
-    \ as stated by the standard.\n  event.preventDefault();\n  // Chrome requires\
-    \ returnValue to be set.\n  event.returnValue = '';\n};\n\n\nfunction getUrlHash(){\n\
-    \  return window.location.hash.slice(1);\n};\n\n  \n// when the window back or\
-    \ forward button is pressed onPopState is triggered\n// a popstate is also triggered\
-    \ from a change in the URL in this case the window.history.state will be None\n\
-    function onPopState(e) {\n  let state = e.state;\n  const prevPos = Number(sessionStorage.getItem('currentPos'))\n\
-    \  if (state){\n      window.history.replaceState(state,'',state.url)\n      window.undo\
-    \ = prevPos - state.pos  //this line is the problem1!!!!\n      sessionStorage.setItem('currentPos',\
-    \ state.pos)\n    }\n  else {\n    // new url equivalent to push state\n    const\
-    \ pos = prevPos + 1\n    const url = window.location.hash\n    sessionStorage.setItem('currentPos',\
-    \ pos)\n    state = {url: url, pos: pos}\n    window.undo = -1\n    window.history.replaceState(state,'',state.url)\n\
+    \ a differnent web page then return to this page!\n\nsetUp()\n  \nfunction setUp(e)\
+    \ {\n  let last_known_pos = Number(sessionStorage.getItem('currentPos'));\n  let\
+    \ state = window.history.state;\n  if(state===null || jQuery.isEmptyObject(state)){\
+    \  \n    state = {}\n    state.pos = last_known_pos\n    state.url = window.location.hash\n\
+    \    window.history.replaceState(state,'')  \n  };\n  sessionStorage.setItem('currentPos',\
+    \ state.pos);\n};\n\n\nvar defaultTitle = $(\"title\").text()\nvar currentPosition\
+    \ = 0\nvar undo = 0\n\nwindow.onpopstate = onPopState;\nwindow.onpageshow = setUp;\n\
+    window.onbeforeunload = onBeforeUnload;\n  \n// App Unload Behaviour  \nfunction\
+    \ onBeforeUnload(event) {\n  // Cancel the event as stated by the standard.\n\
+    \  event.preventDefault();\n  // Chrome requires returnValue to be set.\n  event.returnValue\
+    \ = '';\n};\n\n\nfunction getUrlHash(){\n  return window.location.hash.slice(1);\n\
+    };\n\n  \n// when the window back or forward button is pressed onPopState is triggered\n\
+    // a popstate is also triggered from a change in the URL in this case the window.history.state\
+    \ will be None\nfunction onPopState(e) {\n  let state = e.state;\n  const prevPos\
+    \ = Number(sessionStorage.getItem('currentPos'))\n  if (state){\n      window.history.replaceState(state,'',state.url)\n\
+    \      window.undo = prevPos - state.pos  //this line is the problem1!!!!\n  \
+    \    sessionStorage.setItem('currentPos', state.pos)\n    }\n  else {\n    //\
+    \ new url equivalent to push state\n    const pos = prevPos + 1\n    const url\
+    \ = window.location.hash\n    sessionStorage.setItem('currentPos', pos)\n    state\
+    \ = {url: url, pos: pos}\n    window.undo = -1\n    window.history.replaceState(state,'',state.url)\n\
     \    \n  }\n  //console.log(state)\n  anvil.call($('.content'), \"on_navigation\"\
     )\n};\n \n\nfunction stopUnload(){\n  window.onpopstate = () => {};  // unbind\
     \ onpopstate\n  window.history.go(window.undo);  // reverse the navigation\n \
@@ -38,16 +43,7 @@ native_deps: {head_html: "<script>\n// need to think about what happens if we vi
     \ state = window.history.state\n    window.history.replaceState(state, '' ,url)\n\
     \    window.undo = 0  \n};\n\n  \nfunction setTitle(title) {\n  if (title ===\
     \ null){\n    $(\"title\").text(window.defaultTitle)\n  }\n  else{\n    $(\"title\"\
-    ).text(title)\n  };\n};\n  \n\nfunction setUp(e) {\n  // this is a really annoying\
-    \ bug - history.state is never remembered on the page that is reloaded!!!! \n\
-    \  // but it is remembered for all other pages!\n  // so we're guessing that the\
-    \ user is loading the page they last visited \n  // this might not be the case\
-    \ so could bug out!\n  let last_known_pos = Number(sessionStorage.getItem('currentPos'));\n\
-    \  let state = window.history.state;\n  console.log(state)\n  if(state===null\
-    \ || jQuery.isEmptyObject(state)){  \n    state = {}\n    state.pos = last_known_pos\n\
-    \    state.url = window.location.hash\n    window.history.replaceState(state,'')\
-    \  \n  };\n  sessionStorage.setItem('currentPos', state.pos);\n  sessionStorage.setItem('_app_timestamp',\
-    \ e.timeStamp);\n};\n\n  \n</script>\n\n\n<script>\n\n  \nfunction setAppUnloadBehaviour(warning){\n\
+    ).text(title)\n  };\n};\n  \n\n\n  \n</script>\n\n\n<script>\n\n  \nfunction setAppUnloadBehaviour(warning){\n\
     \  if (warning){\n    window.onbeforeunload = onBeforeUnload;\n  }\n  else{\n\
     \    window.onbeforeunload = () => {};  // unbind onbeforeunload\n  };\n  \n};\n\
     \n  \nfunction setUnloadPopStateBehaviour(flag){\n  if (flag){\n    window.onpopstate\
