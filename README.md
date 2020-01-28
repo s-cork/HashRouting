@@ -623,12 +623,14 @@ Routing implements [W3 Schools onbeforeunload](https://www.w3schools.com/jsref/t
 
 This warns the user before they are about to navigate away from the app. 
 
-To prevent this behaviour, in your `MainForm` do:
+This is implemented on any `Route Form` with a `before_unload` method
+
+It can also be implemented when leaving the app if desired. To implement this feature, in the `MainForm` do:
 
 ```python
 from HashRouting import routing
 
-routing.set_warning_before_unload(False)
+routing.set_warning_before_app_unload(True)
 
 @routing.main_router
 class MainForm(MainFormTemplate):
