@@ -594,13 +594,13 @@ or
 
 ## Routing Debug Print Statements
 
-These are on by default
+To debug your routing behaviour use the routing logger. Routing logs are turned off by default.
 
-To turn them off - in your `MainForm` do:
+To use the routing logger, in your `MainForm` do:
 ```python
 from HashRouting import routing
 
-routing.logger.debug = False
+routing.logger.debug = True
 
 @routing.main_router
 class MainForm(MainFormTemplate):

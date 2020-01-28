@@ -41,4 +41,4 @@ class Logger():
 
       
 
-logger = Logger(debug=True, msg='#routing:')  #set to false if you don't wish to debug. You can also - in your main form - do routing.logger.debug = False
+logger = Logger(debug=False, msg='#routing:')  #set to false if you don't wish to debug. You can also - in your main form - do routing.logger.debug = False

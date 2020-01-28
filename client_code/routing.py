@@ -2,7 +2,7 @@ import anvil
 from collections import namedtuple
 from ._logging import logger  
 
-#to stop printing with logger do routing.logger.debug = False above your main_router form
+#to print route logging messages set routing.logger.debug = True above your main_router form
 
 
 path = namedtuple('path', ['form','url_pattern','url_keys','title','properties'])
