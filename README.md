@@ -477,7 +477,8 @@ class ListArticlesForm(ListArticlesFormTemplate):
 
   def form_show(self, **event_args):
     """This method is called when the column panel is shown on the screen"""
-    self.repeating_panel.items = anvil.server.call('get_articles')
+    self.repeating_panel.items = anvil.server.call_s('get_articles')
+    # silent call to the server on form show
 
 ```
 
