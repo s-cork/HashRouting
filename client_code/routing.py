@@ -75,7 +75,7 @@ def main_router(Cls):
       
       if not (url_hash and url_pattern and url_dict):
         url_hash, url_pattern, url_dict = get_url_components()
-      logger.print(f"on_navigation triggerd url_hash = {url_hash}\nurl_dict={url_dict}")
+      logger.print(f"on_navigation triggerd\nurl_hash    = {url_hash}\nurl_pattern = {url_pattern}\nurl_dict   = {url_dict}")
       
       if getattr(Cls,'on_navigation', None): 
         logger.print(f'{Cls.__name__} on_navigation called')
@@ -339,12 +339,12 @@ def set_url_hash(url_hash=None, *, #the remaining are keyword only arguments
   
     
 def load_form(form, url_pattern=None, url_keys=[], *, replace_current_url=False, set_in_history=True, load_from_cache=True, **properties):
-  """loads the form with properties - in most instances better to just do anvil.set_url_hash
-  useful if you want to pass an item to a form say... or don't like to use anvil.set_url_hash
+  """loads the form with properties - in most instances better to just do routing.set_url_hash
+  useful if you want to pass an item to a form say... or don't like to use routing.set_url_hash
   
   note the expected url_hash is already in cache then the cached form will load unless you set load_from_cache = False
   
-  if you are using a url_dict for this route form then you must pass a kwarg that has the correct keys somewhere in the properites like a key in the item
+  if you are using a url_dict for this route form then you must pass a kwarg that has the correct keys somewhere in the **properites
   e.g.  ArticleForm as the route decorator @routing.route('article', ['id'])
   'id' is a required key so load_form can be called in. the following ways:
   load_form(ArticleForm, item=item)          #  where 'id' is a key in item...

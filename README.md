@@ -319,7 +319,7 @@ class MainForm(MainFormTemplate):
 
 ```python
 nav_args = {'url_hash':    url_hash, 
-            'url_pattern': url_hash, 
+            'url_pattern': url_pattern, 
             'url_dict':    url_dict, 
             'unload_form': form_that_was_unloaded
             }
