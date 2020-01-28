@@ -419,7 +419,7 @@ class LoginForm(LoginFormTemplate):
                          replace_current_url=True,
                          redirect=True
                          )
-    # '' replaces 'login' in the url history and redirects to the HomeForm
+    # '' replaces 'login' in the history stack and redirects to the HomeForm
 
 ```
 
