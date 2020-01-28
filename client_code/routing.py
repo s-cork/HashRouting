@@ -75,7 +75,7 @@ def main_router(Cls):
       
       if not (url_hash and url_pattern and url_dict):
         url_hash, url_pattern, url_dict = get_url_components()
-      logger.print(f"on_navigation triggerd\nurl_hash    = {url_hash}\nurl_pattern = {url_pattern}\nurl_dict   = {url_dict}")
+      logger.print(f"on_navigation triggerd\nurl_hash    = {url_hash}\nurl_pattern = {url_pattern}\nurl_dict    = {url_dict}")
       
       if getattr(Cls,'on_navigation', None): 
         logger.print(f'{Cls.__name__} on_navigation called')
