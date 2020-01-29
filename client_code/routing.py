@@ -14,7 +14,6 @@ _cache = {} #url_pattern: string, url_dict: dict, form: Form()
 _current_form = None  # the current form that should be on the content panel - this is useful for slow form loads and quick navigation
 _main_router = None  # this will be the main router - get_open_form() can break if the main_router hasn't loaded yet 
 _on_navigation_stack_depth = 0
-_on_navigation_last_arguments = ()
 
 """
 Terminology and examples
@@ -57,7 +56,7 @@ def main_router(Cls):
       # get's the form to load (loads the error_form if there is no form to load)
       # loads the form
 
-      global _on_navigation_stack_depth, _on_navigation_last_arguments
+      global _on_navigation_stack_depth
       if _on_navigation_stack_depth > 5:
         _on_navigation_stack_depth = 0
         logger.print('**WARNING**  \nurl_hash redirected too many times without a form load, getting out\ntry setting redirect=False')
@@ -87,12 +86,6 @@ def main_router(Cls):
       if not (url_hash and url_pattern and url_dict):
         url_hash, url_pattern, url_dict = get_url_components()
       logger.print(f"on_navigation triggerd\nurl_hash    = {url_hash}\nurl_pattern = {url_pattern}\nurl_dict    = {url_dict}")
-
-      if _on_navigation_last_arguments == (url_hash, url_pattern, url_dict):
-        logger.print('**WARNING** \nurl_hash redirected with the same arguments twice in a row, getting out\ntry setting redirect=False')
-        return
-        # raise Exception('url_hash redirected with the same arguments twice in a row\ntry setting redirect=False')
-      _on_navigation_last_arguments = (url_hash, url_pattern, url_dict)
       
       if getattr(Cls,'on_navigation', None): 
         logger.print(f'{Cls.__name__} on_navigation called')
