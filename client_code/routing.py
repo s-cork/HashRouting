@@ -27,14 +27,14 @@ url_keys:    ['id']            |   []          # list[str]   the keys you expect
 
 """
 Form DECORATORS
-@main_router                                         ## above the MainForm that loads forms into it's content_panel. 
-@route(url_pattern=str, url_keys=[str], title=str)   ## defaults: url_pattern='', url_keys=[], title= #whatever is set in anvil's Titles and Logs
-@error_form                                          ## optional  - this form will load for an incorrect url or by calling router.load_error_form() 
+@routing.main_router                                         ## above the MainForm that loads forms into it's content_panel. 
+@routing.route(url_pattern=str, url_keys=[str], title=str)   ## defaults: url_pattern='', url_keys=[], title= #whatever is set in anvil's Titles and Logs
+@routing.error_form                                          ## optional  - this form will load for an incorrect url or by calling router.load_error_form() 
 """
 def main_router(Cls):
   """
   decorator for the main form
-  @router.main_router
+  @routing.main_router
   """
   class MainRouter(Cls):
     
@@ -151,7 +151,7 @@ def main_router(Cls):
 class route():
   """ 
   the route decorator above any form you want to load in the content_panel
-  @router.route(url_pattern=str,url_keys=List[str], title=str)
+  @routing.route(url_pattern=str,url_keys=List[str], title=str)
   """
   def __init__(self, url_pattern ='', url_keys=[], title=None):
     self.url_pattern = url_pattern
@@ -195,7 +195,7 @@ class route():
   
 def error_form(Cls):
   """ optional decorator - this is the error form simply use the decorator above your error Form
-  @router.error_form
+  @routing.error_form
   """
   class ErrorForm(Cls):
     def __init__(self, **properties):
