@@ -331,7 +331,9 @@ def set_url_hash(url_hash=None, *, #the remaining are keyword only arguments
   
   ### process the url_arguments
   url_hash, url_pattern, url_dict = _process_url_arguments(url_hash, url_pattern=url_pattern, url_dict=url_dict)
-    
+  if url_hash == get_url_hash():
+    return  
+
   # remove from cache  
   if not load_from_cache:
     remove_from_cache(url_hash)
@@ -376,6 +378,9 @@ def load_form(form, url_pattern=None, url_keys=[], *, replace_current_url=False,
   
   if not replace_current_url and not set_in_history:
     raise Exception('cannot do set_in_history=False and replace_current_url=False')
+
+  if url_hash == get_url_hash():
+    return  
 
   if replace_current_url and set_in_history:
     logger.print(f"loading form {form.__name__}, with url_hash: #{url_hash}, replacing current url, setting in history")
