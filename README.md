@@ -338,7 +338,7 @@ nav_args = {'url_hash':    url_hash,
 
 ___
 
-## Preventing a Form from Unloading
+## Preventing a Form from Unloading (When navigating within the app)
 
 Create a method in a `Route Form` called `before_unload` 
 
@@ -353,11 +353,17 @@ To prevent Unloading return a value
       return 'STOP'
 ```
 
-NB: Use this method with caution.
+NB:
 <br>
 Only use if you need to prevent unloading.
 <br>
 Otherwise the `form_hide` event should work just fine. 
+
+NB: 
+<br>
+This method does not prevent a user from navigating away from the app entirely. 
+<br>
+(see the section **Leaving the App** below)
 
 ___
 
@@ -632,11 +638,14 @@ def button_1_click(self, **event_args):
 
 Routing implements [W3 Schools onbeforeunload](https://www.w3schools.com/jsref/tryit.asp?filename=tryjsref_onbeforeunload_dom)
 
-This warns the user before they are about to navigate away from the app. 
+This warns the uses  before they are about to navigate away from the app using the default browser warning.
+(does not work on ios) 
 
-This is implemented on any `Route Form` with a `before_unload` method
+By default this setting is switched off. 
 
-It can also be implemented when leaving the app if desired. To implement this feature, in the `MainForm` do:
+To switch it on do: `routing.set_warning_before_app_unload(True)`
+
+To implement this behaviour for all pages set this in your main form like:
 
 ```python
 from HashRouting import routing
@@ -647,3 +656,27 @@ routing.set_warning_before_app_unload(True)
 class MainForm(MainFormTemplate):
 
 ```
+<br>
+
+To do this on specific pages you must toggle the behvaiour to True and False. 
+
+```python
+def form_show(self, **event_args):
+  routing.set_warning_before_app_unload(True)
+
+def form_hid(self, **event_args):
+  routing.set_warning_before_app_unload(False)
+
+```
+
+Or based on a parameter (See the example apps `ArticleForm` code)
+
+```python
+def edit_status_toggle(status):
+  routing.set_warning_before_app_unload(status)
+
+```
+
+NB:
+<br>
+When used on a specific form this should be used inconjunction with the `before_unload` method.
