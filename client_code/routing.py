@@ -14,7 +14,7 @@ _cache = {} #url_pattern: string, url_dict: dict, form: Form()
 _current_form = None  # the current form that should be on the content panel - this is useful for slow form loads and quick navigation
 _main_router = None  # this will be the main router - get_open_form() can break if the main_router hasn't loaded yet 
 _app_unload_warning = False
-_navigation_stack_depth = 0
+_on_navigation_stack_depth = 0
 _on_navigation_last_arguments = ()
 
 """
@@ -58,11 +58,13 @@ def main_router(Cls):
       # get's the form to load (loads the error_form if there is no form to load)
       # loads the form
 
-      global _navigation_stack_depth, _on_navigation_last_arguments
-      if _navigation_stack_depth > 5:
-        logger.print('url_hash redirected too many times without a form load, try setting redirect=False')
-        raise Exception('url_hash redirected too many times without a form load, try setting redirect=False')
-      _navigation_stack_depth += 1
+      global _on_navigation_stack_depth, _on_navigation_last_arguments
+      if _on_navigation_stack_depth > 5:
+        _on_navigation_stack_depth = 0
+        logger.print('**WARNING**  \nurl_hash redirected too many times without a form load, getting out\ntry setting redirect=False')
+        return  # could change this to a raise
+        # raise Exception('url_hash redirected too many times without a form load, try setting redirect=False')
+      _on_navigation_stack_depth += 1
 
       if getattr(_current_form,'before_unload', None): 
         logger.print(f'{_current_form.__name__} before_unload called')
@@ -79,7 +81,7 @@ def main_router(Cls):
         if stop_unload:
           logger.print(f"stop unload called from {_current_form.__name__}")
           anvil.js.call_js('stopUnload')
-          _navigation_stack_depth -= 1
+          _on_navigation_stack_depth -= 1
           return   #this will stop the navigation
         anvil.js.call_js('setUnloadPopStateBehaviour',False)
       
@@ -88,8 +90,9 @@ def main_router(Cls):
       logger.print(f"on_navigation triggerd\nurl_hash    = {url_hash}\nurl_pattern = {url_pattern}\nurl_dict    = {url_dict}")
 
       if _on_navigation_last_arguments == (url_hash, url_pattern, url_dict):
-        logger.print('url_hash redirected with the same arguments twice in a row')
-        raise Exception('url_hash redirected with the same arguments twice in a row')
+        logger.print('**WARNING** \nurl_hash redirected with the same arguments twice in a row, getting out\ntry setting redirect=False')
+        return
+        # raise Exception('url_hash redirected with the same arguments twice in a row\ntry setting redirect=False')
       _on_navigation_last_arguments = (url_hash, url_pattern, url_dict)
       
       if getattr(Cls,'on_navigation', None): 
@@ -112,7 +115,7 @@ def main_router(Cls):
       else:
         self.content_panel.clear()  # clear the form now just incase we end up with a new to cache form that is slow to load later
         self.load_form(url_hash=url_hash, url_pattern=url_pattern, url_dict=url_dict, path=path)
-        _navigation_stack_depth -= 1
+        _on_navigation_stack_depth -= 1
 
 
     def find_path(self, url_hash, url_pattern, url_dict):
