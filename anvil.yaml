@@ -15,7 +15,7 @@ native_deps: {head_html: "<script>\n// need to think about what happens if we vi
     \    window.history.replaceState(state,'')  \n  };\n  sessionStorage.setItem('currentPos',\
     \ state.pos);\n};\n\n\nvar defaultTitle = $(\"title\").text()\nvar currentPosition\
     \ = 0\nvar undo = 0\n\nwindow.onpopstate = onPopState;\nwindow.onpageshow = setUp;\n\
-    window.onbeforeunload = onBeforeUnload;\n  \n// App Unload Behaviour  \nfunction\
+    //window.onbeforeunload = onBeforeUnload;\n  \n// App Unload Behaviour  \nfunction\
     \ onBeforeUnload(event) {\n  // Cancel the event as stated by the standard.\n\
     \  event.preventDefault();\n  // Chrome requires returnValue to be set.\n  event.returnValue\
     \ = '';\n};\n\n\nfunction getUrlHash(){\n  return window.location.hash.slice(1);\n\
