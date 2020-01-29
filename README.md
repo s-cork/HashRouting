@@ -636,16 +636,17 @@ def button_1_click(self, **event_args):
 
 ## Leaving the app
 
-Routing implements [W3 Schools onbeforeunload](https://www.w3schools.com/jsref/tryit.asp?filename=tryjsref_onbeforeunload_dom)
+Routing implements [W3 Schools onbeforeunload](https://www.w3schools.com/jsref/tryit.asp?filename=tryjsref_onbeforeunload_dom) method.
 
-This warns the uses  before they are about to navigate away from the app using the default browser warning.
+This warns the user  before navigating away from the app using a default browser warning.
+<br>
 (does not work on ios) 
 
 By default this setting is switched off. 
-
+<br>
 To switch it on do: `routing.set_warning_before_app_unload(True)`
 
-To implement this behaviour for all pages set this in your main form like:
+To implement this behaviour for all pages change the setting in your `MainForm` like:
 
 ```python
 from HashRouting import routing
@@ -658,18 +659,18 @@ class MainForm(MainFormTemplate):
 ```
 <br>
 
-To do this on specific pages you must toggle the behvaiour to True and False. 
+To implement this behaviour only on specific `Route Forms` toggle the setting like:
 
 ```python
 def form_show(self, **event_args):
   routing.set_warning_before_app_unload(True)
 
-def form_hid(self, **event_args):
+def form_hide(self, **event_args):
   routing.set_warning_before_app_unload(False)
 
 ```
 
-Or based on a parameter (See the example apps `ArticleForm` code)
+Or based on a parameter (See the example app `ArticleForm` code for working example)
 
 ```python
 def edit_status_toggle(status):
@@ -679,4 +680,4 @@ def edit_status_toggle(status):
 
 NB:
 <br>
-When used on a specific form this should be used inconjunction with the `before_unload` method.
+When used on a specific `Route Form` this should be used in conjunction with the `before_unload` method (see above).
