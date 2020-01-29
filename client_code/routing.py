@@ -13,7 +13,6 @@ _error_form = None  #Form to load if a URL is not valid
 _cache = {} #url_pattern: string, url_dict: dict, form: Form()
 _current_form = None  # the current form that should be on the content panel - this is useful for slow form loads and quick navigation
 _main_router = None  # this will be the main router - get_open_form() can break if the main_router hasn't loaded yet 
-_app_unload_warning = False
 _on_navigation_stack_depth = 0
 _on_navigation_last_arguments = ()
 
@@ -149,7 +148,6 @@ def main_router(Cls):
         form.url_dict    = url_dict
         
         anvil.js.call_js('setTitle', form._route_title)
-        _set_browser_unload(hasattr(form, "before_unload"))
         self.content_panel.clear()
         self.content_panel.add_component(form)
           
@@ -473,19 +471,10 @@ def _process_url_arguments(url_hash=None, *, url_pattern=None, url_dict=None):
   url_hash, url_pattern, url_dict = get_url_components(url_hash)  # will convert to a string
   return url_hash, url_pattern, url_dict
 
-def _set_browser_unload(warning):
-  if not _app_unload_warning:
-    # only set this behaviour if _app_unload_warning was not set to True by anvil user
-    anvil.js.call_js('setAppUnloadBehaviour', warning)
-
     
 def set_warning_before_app_unload(warning=True):
   if not isinstance(warning, bool):
     raise TypeError(f"warning={warning} must be a boolean")
-  
-  global _app_unload_warning
-  _app_unload_warning = warning
-
   anvil.js.call_js('setAppUnloadBehaviour', warning)
 
 def replace_current_url(url_hash, *args, redirect=False, set_in_history=True, **kwargs):
