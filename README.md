@@ -230,8 +230,7 @@ If you do `routing.set_url_hash` inside the `__init__` method or `form_show` eve
 In this case you will get a `warning` from the `routing.logger` and navigation/redirection will be haulted.
 
 Navigation will be haulted:
-* after 5 navigation attempts without loading a form to `content_panel`, or 
-* if an attempt is made to redirect to the exact same `url_hash` without loading a form to `content_panel`.
+* after 5 navigation attempts without loading a form to `content_panel`
 
 <br>
 
@@ -262,7 +261,7 @@ class ArticleForm(ArticleFormTemplate):
 ```
 
 
-in the `routing.set_url_hash` method, defaults are as follows:
+in the `routing.set_url_hash` method, default kwargs are as follows:
 ```python
 """
 replace_current_url = False # Set to True if you want the url change to happen 'in place' rather than as a new history item
@@ -271,6 +270,10 @@ redirect            = True  # Set to False if you don't wish to navigate away fr
 load_from_cache     = True  # Set to False if you want the new URL to NOT load from cache
 """
 ```
+
+
+- all the above examples can be implemented in a similar way with `routing.load_form` (using a `form class` rather than a `url_hash` as an `argument`). Optionasl `kwargs` for `routing.load_form` are the same, except for `redirect` which is not available.
+- don't worry about calling `set_url_hash` to the current hash in the window address bar - nothing will happen. 
 
 ---
 
