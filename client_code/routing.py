@@ -279,10 +279,7 @@ def remove_from_cache(url_hash=None, *, url_pattern=None, url_dict=None):
 
 def add_to_cache(url_hash, form):
   """the form should be initiated 
-  useful if you have a that you change the url and then want to add it to the cache
-  e.g. (in an article form init method)
-  routing.replace_current_url('article?id=2')
-  routing.add_to_cache('article?id=2', self)
+  useful if you have a form instance and want to add it to cache without navigating to it
   """
   logger.print(f'adding {url_hash} to cache with {form.__name__}')
   _cache[url_hash] = form
@@ -312,8 +309,9 @@ def set_url_hash(url_hash=None, *, #the remaining are keyword only arguments
   replace_current_url = False - pushes a new url to the history stack (the default behaviour)
                         nb: it is impossoble to push a new url to the history stack and have set_in_history=False
                       = True - repaces the current url in the address bar
-  set_in_history      = False - the current url remains in the history stack and will appear on back/forward navigation
-                      = True - the new url is added to the history stack so appears in back/foward navigation
+  set_in_history      = True - the new url is added to the history stack so appears in back/foward navigation
+                      = False - the current url remains in the history stack and will appear on back/forward navigation
+                      
   redirect            = True -  this will set the main_routers on_navigation method to fire - 
                       = False -  on_navigation won't be fired
   load_from_cache     = True - on_navigation will load from _cache if the url_hash exists in _cache
