@@ -55,7 +55,7 @@ These are all the forms that are loaded inside the `MainForm`'s `content_panel`.
 from HashRouting import routing
 
 @routing.route('article', url_keys=['id'])
-class Article(ArticleTemplate):
+class ArticleForm(ArticleFormTemplate):
 ```
 
 Or without any `url_keys`
@@ -64,7 +64,7 @@ Or without any `url_keys`
 from HashRouting import routing
 
 @routing.route('article')
-class Article(ArticleTemplate):
+class ArticleForm(ArticleFormTemplate):
 ```
 
 
@@ -206,6 +206,8 @@ class ListItems(ListItemsTemplate):
 
 ## Navigation Techniques
 
+### `redirect=False`
+
 It is possible to set a new url without navigating away from the current form. For example a form could have this code:
 ```python
     def search_click(self, **event_args):
@@ -219,15 +221,24 @@ It is possible to set a new url without navigating away from the current form. F
                              )
       self.search(self.search_terms.text)
 ```
-This way search parameters are added to the history stack so that the user can navigate back and forward.
+This way search parameters are added to the history stack so that the user can navigate back and forward but routing does not attempt to navigate to a new form instance. 
+
+**IMPORTANT**
+
+If you do `routing.set_url_hash` inside the `__init__` method or `form_show` event, be careful, you may cause an infinite loop if your `url_hash` points to the same form and `redirect=True`! 
+<br>
+In this case you will get a `warning` from the `routing.logger` and navigation/redirection will be haulted.
+
+Navigation will be haulted:
+* after 5 navigation attempts without loading a form to `content_panel`, or 
+* if an attempt is made to redirect to the exact same `url_hash` without loading a form to `content_panel`.
 
 <br>
 
+### `replace_current_url=True`
 It is also possible to replace the current url in the history stack rather than creating a new entry in the history stack.
 
-In the `ArticleForm` example perhaps we want to create a new article if the `id` parameter is empty like:
-
-`url_hash = "article?id="`
+In the `ArticleForm` example perhaps we want to create a new article if the `id` parameter is empty like: `url_hash = "article?id="`
 
 ```python
 @routing.route('article', url_keys=['id'])
@@ -443,7 +454,7 @@ And in the `__init__` method - you will want something like:
 
 ```python
 @routing.route('article', keys=['id'], title='Article-{id}')
-class Article(ArticleTemplate):
+class ArticleForm(ArticleFormTemplate):
   def __init__(self, **properties):
     try:
       self.item = anvil.server.call('get_article_by_id', self.url_dict['id'])
@@ -491,7 +502,7 @@ That way you wouldn't need to utilise the show event of the `ListArticlesForm`
 
 ```python
 @routing.route('article', keys=['id'], title='Article-{id}')
-class Article(ArticleTemplate):
+class ArticleForm(ArticleFormTemplate):
   def __init__(self, **properties):
     try:
       self.item = anvil.server.call('get_article_by_id', self.url_dict['id'])
@@ -513,7 +524,7 @@ use `routing.load_form` instead of `routing.set_url_hash`
 
 ```python
 @routing.route('article', keys=['id'], title='Article-{id}')
-class Article(ArticleTemplate):
+class ArticleForm(ArticleFormTemplate):
   def __init__(self, **properties):
     try:
       self.item = anvil.server.call('get_article_by_id',self.url_dict['id'])
