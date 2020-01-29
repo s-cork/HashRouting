@@ -332,7 +332,7 @@ def set_url_hash(url_hash=None, *, #the remaining are keyword only arguments
   ### process the url_arguments
   url_hash, url_pattern, url_dict = _process_url_arguments(url_hash, url_pattern=url_pattern, url_dict=url_dict)
   if url_hash == get_url_hash():
-    return  
+    return  #should not continue if url_hash is identical to the addressbar hash!
 
   # remove from cache  
   if not load_from_cache:
@@ -380,7 +380,7 @@ def load_form(form, url_pattern=None, url_keys=[], *, replace_current_url=False,
     raise Exception('cannot do set_in_history=False and replace_current_url=False')
 
   if url_hash == get_url_hash():
-    return  
+    return  #should not continue if url_hash is identical to the addressbar hash!
 
   if replace_current_url and set_in_history:
     logger.print(f"loading form {form.__name__}, with url_hash: #{url_hash}, replacing current url, setting in history")
@@ -393,10 +393,8 @@ def load_form(form, url_pattern=None, url_keys=[], *, replace_current_url=False,
     anvil.js.call_js('pushState', '#' + url_hash)
     
   if not load_from_cache:
-    try:
-      remove_from_cache(url_hash)
-    except:
-      pass
+    remove_from_cache(url_hash)
+
   
   path.properties.update(**properties)  # load the properties to path
   _main_router.on_navigation(url_hash=url_hash, url_pattern=url_pattern, url_dict=url_dict, path=path)
