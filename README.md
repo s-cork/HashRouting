@@ -35,14 +35,14 @@ The `MainForm` is **not** the `HomeForm`. The `MainForm` has no content, only ha
 - and add the decorator: `@routing.main_router`
 
 ```python
-    from HashRouting import routing
-    from .Form1 import Form1
-    from .Form2 import Form2
-    from .Form3 import Form3
-    from .ErrorForm import ErrorForm
+from HashRouting import routing
+from .Form1 import Form1
+from .Form2 import Form2
+from .Form3 import Form3
+from .ErrorForm import ErrorForm
 
-    @routing.main_router
-    class Main(MainTemplate):
+@routing.main_router
+class Main(MainTemplate):
 ```
 ---
 
@@ -155,7 +155,7 @@ The following represents some notes and examples that might be helpful
 ```python
 @routing.route('form1', url_keys=['key1'])
 class Form1(Form1Template):
-    def __init__(self, key1, **properties):
+  def __init__(self, key1, **properties):
 ```
 All the parameters listed in `url_keys` are required, and the rule is enforced by the routing module. If the `Route Form` has required `url_keys` then the routing module will provide a `url_dict` with the parameters from the `url_hash`.
 
@@ -163,7 +163,7 @@ This is the correct way:
 ```python
 @routing.route('form1', url_keys=['key1'])
 class Form1(Form1Template):
-    def __init__(self, **properties):
+  def __init__(self, **properties):
     key1 = self.url_dict['key1']  #routing provides self.url_dict
 ```
 
@@ -186,7 +186,7 @@ It is possible to define optional parameters by adding multiple decorators, e.g.
 @routing.route('')
 @routing.route('', url_keys=['search'])
 class Form1(Form1Template):
-    def __init__(self, **properties):
+  def __init__(self, **properties):
     self.init_components(**properties)
     self.search_terms.text = self.url_dict.get('search', '')
 ```
@@ -197,7 +197,7 @@ Perhaps your form displays a different `item` depending on the `url_pattern`/`ur
 @routing.route('articles')
 @routing.route('blogposts')
 class ListItems(ListItemsTemplate):
-    def __init__(self, **properties):
+  def __init__(self, **properties):
     self.init_components(**properties)
     self.item = anvil.server.call(f'get_{self.url_pattern}')  # self.url_pattern is provided by the routing module
 ```
@@ -210,16 +210,16 @@ class ListItems(ListItemsTemplate):
 
 It is possible to set a new url without navigating away from the current form. For example a form could have this code:
 ```python
-    def search_click(self, **event_args):
-      if self.search_terms.text:
-        routing.set_url_hash(f'?search={self.search_terms.text}', 
-                             redirect=False
-                             )
-      else:
-        routing.set_url_hash('',
-                             redirect=False,
-                             )
-      self.search(self.search_terms.text)
+def search_click(self, **event_args):
+  if self.search_terms.text:
+    routing.set_url_hash(f'?search={self.search_terms.text}', 
+                          redirect=False
+                          )
+  else:
+    routing.set_url_hash('',
+                          redirect=False,
+                          )
+  self.search(self.search_terms.text)
 ```
 This way search parameters are added to the history stack so that the user can navigate back and forward but routing does not attempt to navigate to a new form instance. 
 
@@ -348,12 +348,12 @@ Create a method in a `Route Form` called `before_unload`
 To prevent Unloading return a value
 
 ```python
-  def before_unload(self):
-    # this method is called when the form is about to be unloaded from the content_panel
-    if confirm('are you sure you want to close this form?'):
-      pass
-    else: 
-      return 'STOP'
+def before_unload(self):
+  # this method is called when the form is about to be unloaded from the content_panel
+  if confirm('are you sure you want to close this form?'):
+    pass
+  else: 
+    return 'STOP'
 ```
 
 NB:
@@ -377,10 +377,10 @@ You can pass properties to a form using the `routing.load_form()` method
 ```python
 
 def article_link_click(self, **event_args):
-    routing.load_form(Article, id=3, item=self.item)
-    # if your RouteForm has required keys then you should provide these as kwargs 
-    # nb the key id could also be a key in self.item in which case
-    # routing.load_form(Article, item=self.item) is sufficient (but may be slower to load if item is a LiveObjectProxy [Table Row])
+  routing.load_form(Article, id=3, item=self.item)
+  # if your RouteForm has required keys then you should provide these as kwargs 
+  # nb the key id could also be a key in self.item in which case
+  # routing.load_form(Article, item=self.item) is sufficient (but may be slower to load if item is a LiveObjectProxy [Table Row])
 
 ```
 
@@ -560,10 +560,10 @@ No problem.
 Whenever navigation is triggered by back/forward button clicks the `self.url_hash`, `self.url_dict` and `self.url_pattern` are updated and the `form_show` event is triggered. 
 
 ```python
-    def form_show(self, **event_args):
-      search_text = self.url_dict.get('search','')
-      self.search_terms.text = search_text
-      self.search(search_text)
+def form_show(self, **event_args):
+  search_text = self.url_dict.get('search','')
+  self.search_terms.text = search_text
+  self.search(search_text)
 ```
 ---
 
