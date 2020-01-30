@@ -58,11 +58,8 @@ def main_router(Cls):
 
       global _on_navigation_stack_depth
       if _on_navigation_stack_depth > 5:
-#         _on_navigation_stack_depth = 0
-#         _on_navigation_stack_depth -= 1
         logger.print('**WARNING**  \nurl_hash redirected too many times without a form load, getting out\ntry setting redirect=False')
         return  # could change this to a raise
-        # raise Exception('url_hash redirected too many times without a form load, try setting redirect=False')
       _on_navigation_stack_depth += 1
 
       if getattr(_current_form,'before_unload', None): 
