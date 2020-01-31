@@ -116,7 +116,7 @@ def main_router(Cls):
           return path
       else:
         #if no break we haven't found a valid hash so load the error form  
-        raise KeyError(f'no route form with url_pattern={url_pattern} and url_keys={url_dict.keys()}')
+        raise KeyError(f'{url_hash} does not exist')
     
     
     def load_form(self, url_hash, url_pattern, url_dict, path=None):
