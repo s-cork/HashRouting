@@ -281,7 +281,8 @@ def add_to_cache(url_hash, form):
   useful if you have a form instance and want to add it to cache without navigating to it
   """
   logger.print(f'adding {url_hash} to cache with {form.__name__}')
-  _cache[url_hash] = form
+  if form:
+    _cache[url_hash] = form
 
 
 def clear_cache():
