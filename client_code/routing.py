@@ -123,6 +123,7 @@ def main_router(Cls):
       global _current_form
       
       if url_hash in _cache:  
+        logger.print(_cache)
         logger.print(f"loaded {_cache[url_hash].__name__} from cache")
         _current_form = _cache[url_hash]
       elif path:
@@ -340,7 +341,7 @@ def set_url_hash(url_hash=None, *, #the remaining are keyword only arguments
   
   if redirect:
     _main_router.on_navigation(url_hash, url_pattern, url_dict)
-  elif set_in_history:
+  elif set_in_history and _current_form:
     _cache[url_hash] = _current_form    #no need to add to cache if not being set in history
   
     
