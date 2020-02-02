@@ -1,6 +1,6 @@
 dependencies: []
 services: []
-startup: {type: module, module: routing}
+startup: {type: form, module: Form1}
 package_name: HashRouting
 allow_embedding: false
 name: HashRouting
