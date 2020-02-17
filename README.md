@@ -341,7 +341,7 @@ nav_args = {'url_hash':    url_hash,
 
 ___
 
-## Preventing a Form from Unloading (When navigating within the app)
+## Preventing a Form from Unloading (when navigating within the app)
 
 Create a method in a `Route Form` called `before_unload` 
 
@@ -401,6 +401,7 @@ def button_click(self,**event_args):
 
 ## I have a login form how do I work that?
 
+### As part of `HashRouting` navigation
 ```python
 @routing.main_router
 class MainForm(MainFormTemplate):
@@ -442,6 +443,14 @@ class LoginForm(LoginFormTemplate):
     # '' replaces 'login' in the history stack and redirects to the HomeForm
 
 ```
+
+### Seperate from `HashRouting` navigation
+
+Rather than have the `LoginForm` be part of the navigation, you could create a `LoginForm` as a startup form without using any `HashRouting` decorators. 
+
+Then when the user has signed in you can call `open_form('MainForm')`. The `main_router` will then take control of the `url_hash` based navigation. 
+
+When the user signs out you can call `open_form('LoginForm')` and the `main_router` will no longer have control of the navigation. There will still be entries when the user hits back/forward navigation (i.e. the `url_hash` will change but there will be no change in forms...) :smile:
 
 ---
 
