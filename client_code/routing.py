@@ -5,7 +5,7 @@ from ._logging import logger
 #to print route logging messages set routing.logger.debug = True above your main_router form
 
 
-path = namedtuple('path', ['form','url_pattern','url_keys','title','properties'])
+path = namedtuple('path', ['form','url_pattern','url_keys','title','f_w_r','properties'])
 
 """private globals"""
 _paths = []  #List[path]
@@ -129,7 +129,7 @@ def main_router(Cls):
       elif path:
         title = path.title if path.title is None else path.title.format(**url_dict)
         _cache[url_hash] = path.form(url_hash=url_hash, url_pattern=url_pattern, url_dict=url_dict, 
-                                        title=title,   from_routing=True,        **path.properties)
+                                        title=title,    f_w_r = path.f_w_r,  from_routing=True, **path.properties)
         logger.print(f"loaded {_cache[url_hash].__name__}, added to cache")
       else:
         raise Exception('bad load_form called')
@@ -142,7 +142,7 @@ def main_router(Cls):
         
         anvil.js.call_js('setTitle', form._route_title)
         self.content_panel.clear()
-        self.content_panel.add_component(form)
+        self.content_panel.add_component(form, full_width_row = form._f_w_r)
           
   return MainRouter
 
@@ -152,10 +152,11 @@ class route():
   the route decorator above any form you want to load in the content_panel
   @routing.route(url_pattern=str,url_keys=List[str], title=str)
   """
-  def __init__(self, url_pattern ='', url_keys=[], title=None):
+  def __init__(self, url_pattern ='', url_keys=[], title=None, full_width_row=False):
     self.url_pattern = url_pattern
     self.url_keys    = url_keys
     self.title       = title
+    self.f_w_r       = full_width_row
   def __call__(self, Cls):
     if not isinstance(self.url_pattern, str):
       raise TypeError(f'url_pattern must be type str not {type(self.url_pattern).__name__} in {Cls.__name__}')
@@ -165,7 +166,7 @@ class route():
       raise TypeError(f'title must be type str or None not {type(self.title).__name__} in {Cls.__name__}')
     
     class Route(Cls):
-      def __init__(self, url_hash=None, url_pattern=None, url_dict=None, title=None, 
+      def __init__(self, url_hash=None, url_pattern=None, url_dict=None, title=None, f_w_r=False,
                    route=True, from_routing=False, **properties):
         if route:
           if not from_routing:
@@ -177,17 +178,18 @@ class route():
           self.url_pattern  = url_pattern
           self.url_dict     = url_dict
           self._route_title = title
+          self._f_w_r       = f_w_r
           self.route        = route
           self.from_routing = from_routing
          
         if 'anvil' in str(Cls.__bases__):  # then this was the original class Form(FormTemplate) Class
           Cls.__init__(self, **properties)  # prevents console logging 'Ignoring form constructor kwarg:' which is annoying
         else: # we have a multple decorator so re-pass route kwargs
-          Cls.__init__(self, url_hash=url_hash,  url_pattern=url_pattern, url_dict=url_dict, title=title, 
+          Cls.__init__(self, url_hash=url_hash,  url_pattern=url_pattern, url_dict=url_dict, title=title, f_w_r=f_w_r,
                                 route=route, from_routing=from_routing, **properties)
     
     Route.__name__ = Cls.__name__  #prevents the form being called Route
-    _paths.append(path(Route, self.url_pattern, self.url_keys, self.title, {}))
+    _paths.append(path(Route, self.url_pattern, self.url_keys, self.title, self.f_w_r, {}))
     
     return Route
 
