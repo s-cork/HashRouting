@@ -128,8 +128,9 @@ def main_router(Cls):
         _current_form = _cache[url_hash]
       elif path:
         title = path.title if path.title is None else path.title.format(**url_dict)
+        print(url_dict)
         _cache[url_hash] = path.form(url_hash=url_hash, url_pattern=url_pattern, url_dict=url_dict, 
-                                        title=title,    f_w_r = path.f_w_r,  from_routing=True, **path.properties)
+                                        _route_title=title,    f_w_r = path.f_w_r,  from_routing=True, **path.properties)
         logger.print(f"loaded {_cache[url_hash].__name__}, added to cache")
       else:
         raise Exception('bad load_form called')
@@ -166,7 +167,7 @@ class route():
       raise TypeError(f'title must be type str or None not {type(self.title).__name__} in {Cls.__name__}')
     
     class Route(Cls):
-      def __init__(self, url_hash=None, url_pattern=None, url_dict=None, title=None, f_w_r=False,
+      def __init__(self, url_hash=None, url_pattern=None, url_dict=None, _route_title=None, f_w_r=False,
                    route=True, from_routing=False, **properties):
         if route:
           if not from_routing:
@@ -177,7 +178,7 @@ class route():
           self.url_hash     = url_hash
           self.url_pattern  = url_pattern
           self.url_dict     = url_dict
-          self._route_title = title
+          self._route_title = _route_title
           self._f_w_r       = f_w_r
           self.route        = route
           self.from_routing = from_routing
@@ -185,7 +186,7 @@ class route():
         if 'anvil' in str(Cls.__bases__):  # then this was the original class Form(FormTemplate) Class
           Cls.__init__(self, **properties)  # prevents console logging 'Ignoring form constructor kwarg:' which is annoying
         else: # we have a multple decorator so re-pass route kwargs
-          Cls.__init__(self, url_hash=url_hash,  url_pattern=url_pattern, url_dict=url_dict, title=title, f_w_r=f_w_r,
+          Cls.__init__(self, url_hash=url_hash,  url_pattern=url_pattern, url_dict=url_dict, _route_title=_route_title, f_w_r=f_w_r,
                                 route=route, from_routing=from_routing, **properties)
     
     Route.__name__ = Cls.__name__  #prevents the form being called Route
@@ -431,7 +432,7 @@ def _finditem(obj, key):
   if key in obj: 
     return obj[key]
   for k, v in obj.items():
-    if isinstance(v,dict) or isinstance(v, LiveObjectProxy):
+    if isinstance(v,dict) or isinstance(v, anvil.LiveObjectProxy):
       item = _finditem(v, key)
       if item is not None:
         return item
