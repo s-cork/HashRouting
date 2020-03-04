@@ -372,7 +372,7 @@ def load_form(form, url_pattern=None, url_keys=[], *, replace_current_url=False,
   if not replace_current_url and not set_in_history:
     raise Exception('cannot do set_in_history=False and replace_current_url=False')
 
-  if url_hash == get_url_hash():
+  if url_hash == get_url_hash() and _current_form is not None:
     return  #should not continue if url_hash is identical to the addressbar hash!
 
   if replace_current_url and set_in_history:
