@@ -128,7 +128,6 @@ def main_router(Cls):
         _current_form = _cache[url_hash]
       elif path:
         title = path.title if path.title is None else path.title.format(**url_dict)
-        print(url_dict)
         _cache[url_hash] = path.form(url_hash=url_hash, url_pattern=url_pattern, url_dict=url_dict, 
                                         _route_title=title,    f_w_r = path.f_w_r,  from_routing=True, **path.properties)
         logger.print(f"loaded {_cache[url_hash].__name__}, added to cache")
