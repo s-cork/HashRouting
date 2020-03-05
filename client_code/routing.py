@@ -202,6 +202,7 @@ def error_form(Cls):
     def __init__(self, **properties):
       Cls.__init__(self, **properties)
       self._route_title=None # route form needs this to load from cache...
+      self._f_w_r = None
   global _error_form
   _error_form = ErrorForm
   return ErrorForm
