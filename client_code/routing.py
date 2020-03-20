@@ -143,7 +143,8 @@ def main_router(Cls):
         anvil.js.call_js('setTitle', form._route_title)
         self.content_panel.clear()
         self.content_panel.add_component(form, full_width_row = form._f_w_r)
-          
+
+  MainRouter.__name__ = Cls.__name__
   return MainRouter
 
 
