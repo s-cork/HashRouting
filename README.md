@@ -1,5 +1,5 @@
 # HashRouting
-HashRouting - a dependancy for anvil.works that allows navigation in apps
+HashRouting - a dependency for anvil.works that allows navigation in apps
 
 
 Dependency Clone Link: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [<img src="https://anvil.works/img/forum/copy-app.png" height='40px'>](https://anvil.works/build#clone:ZKNOF5FRVLPVF4BI=JHFO3AIV2GTM5ZP4FPFL3SMI)
