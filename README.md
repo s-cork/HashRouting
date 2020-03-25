@@ -2,11 +2,12 @@
 HashRouting - a dependency for anvil.works that allows navigation in apps
 
 
-Dependency Clone Link: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [<img src="https://anvil.works/img/forum/copy-app.png" height='40px'>](https://anvil.works/build#clone:ZKNOF5FRVLPVF4BI=JHFO3AIV2GTM5ZP4FPFL3SMI)
+| | |
+|---|---|
+| Dependency Clone Link:| [<img src="https://anvil.works/img/forum/copy-app.png" height='40px'>](https://anvil.works/build#clone:ZKNOF5FRVLPVF4BI=JHFO3AIV2GTM5ZP4FPFL3SMI)|
+|Live Example: |[hash-routing-example.anvil.app](https://hash-routing-example.anvil.app/) |
+|Example Clone Link with dependency: | [<img src="https://anvil.works/img/forum/copy-app.png" height='40px'>](https://anvil.works/build#clone:JVKXENWGKTU6IO7Y=O62PB7QCYEEU4ZBDTJQ6V6W4%7cZKNOF5FRVLPVF4BI=JHFO3AIV2GTM5ZP4FPFL3SMI)|
 
-Live Example: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [hash-routing-example.anvil.app](https://hash-routing-example.anvil.app/)
-
-Example Clone Link: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [<img src="https://anvil.works/img/forum/copy-app.png" height='40px'>](https://anvil.works/build#clone:JVKXENWGKTU6IO7Y=O62PB7QCYEEU4ZBDTJQ6V6W4)
 
 ---
 ## Introduction
@@ -227,9 +228,9 @@ This way search parameters are added to the history stack so that the user can n
 
 If you do `routing.set_url_hash` inside the `__init__` method or `form_show` event, be careful, you may cause an infinite loop if your `url_hash` points to the same form and `redirect=True`! 
 <br>
-In this case you will get a `warning` from the `routing.logger` and navigation/redirection will be haulted.
+In this case, you will get a `warning` from the `routing.logger` and navigation/redirection will be halted.
 
-Navigation will be haulted:
+Navigation will be halted:
 * after 5 navigation attempts without loading a form to `content_panel`
 
 <br>
@@ -282,7 +283,7 @@ load_from_cache     = True  # Set to False if you want the new URL to NOT load f
 
 You can set each `Route Form` to have a `title` parameter which will change the page title  
 
-If you do not provide a title then the page title will be the default title provided by anvil in your titles and logs
+If you do not provide a title then the page title will be the default title provided by Anvil in your titles and logs
 
 **Examples**:
 
@@ -300,6 +301,17 @@ class ArticleForm(ArticleFormTemplate):
 - Think `f strings` without the f
 - Anything in curly braces should be an item from `url_keys`
 
+---
+
+
+## Full Width Rows
+
+You can set a `Route Form` to load as a `full_width_row` by setting the `full_width_row` parameter to `True`.  
+
+```python
+@routing.route('home', title='Home', full_width_row=True)
+class Home(HomeTemplate):
+```
 
 ___
 ## Selected Links
@@ -335,7 +347,7 @@ class MainForm(MainFormTemplate):
 nav_args = {'url_hash':    url_hash, 
             'url_pattern': url_pattern, 
             'url_dict':    url_dict, 
-            'unload_form': form_that_was_unloaded
+            'unload_form': form_that_was_unloaded #could be None if initial call
             }
 ```
 
@@ -356,16 +368,12 @@ def before_unload(self):
     return 'STOP'
 ```
 
-NB:
-<br>
-Only use if you need to prevent unloading.
-<br>
-Otherwise the `form_hide` event should work just fine. 
+*NB*:
+- Only use if you need to prevent unloading.
+- Otherwise, the `form_hide` event should work just fine.
 
-NB: 
-<br>
-This method does not prevent a user from navigating away from the app entirely. 
-<br>
+*NB*: 
+- This method does not prevent a user from navigating away from the app entirely. 
 (see the section **Leaving the App** below)
 
 ___
@@ -444,13 +452,19 @@ class LoginForm(LoginFormTemplate):
 
 ```
 
-### Seperate from `HashRouting` navigation
+### Separate from `HashRouting` navigation
 
 Rather than have the `LoginForm` be part of the navigation, you could create a `LoginForm` as a startup form without using any `HashRouting` decorators. 
 
 Then when the user has signed in you can call `open_form('MainForm')`. The `main_router` will then take control of the `url_hash` based navigation. 
 
 When the user signs out you can call `open_form('LoginForm')` and the `main_router` will no longer have control of the navigation. There will still be entries when the user hits back/forward navigation (i.e. the `url_hash` will change but there will be no change in forms...) :smile:
+
+(You will need to add an on_navigation method to the `LoginForm`, which does nothing, to keep HashRouting happy)
+```python
+def on_navigation(self):
+    pass
+```
 
 ---
 
@@ -682,7 +696,7 @@ def form_hide(self, **event_args):
 
 ```
 
-Or based on a parameter (See the example app `ArticleForm` code for working example)
+Or based on a parameter (See the example app `ArticleForm` code for a working example)
 
 ```python
 def edit_status_toggle(status):
@@ -690,6 +704,5 @@ def edit_status_toggle(status):
 
 ```
 
-NB:
-<br>
+*NB:*
 When used on a specific `Route Form` this should be used in conjunction with the `before_unload` method (see above).
