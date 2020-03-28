@@ -380,16 +380,18 @@ ___
 
 ## Passing properties to a form
 
-You can pass properties to a form using the `routing.load_form()` method 
+You can pass properties to a form by adding them as keyword arguments with either `routing.load_form` or `routing.set_url_hash` 
 
 ```python
 
 def article_link_click(self, **event_args):
-  routing.load_form(Article, id=3, item=self.item)
+  routing.load_form(Article, id=self.item['id'], item=self.item)
   # if your RouteForm has required keys then you should provide these as kwargs 
   # nb the key id could also be a key in self.item in which case
   # routing.load_form(Article, item=self.item) is sufficient (but may be slower to load if item is a LiveObjectProxy [Table Row])
 
+def article_link_click(self, **event_args):
+  routing.set_url_hash(f'article?id={self.item["id"]'}, item=self.item)
 ```
 
 ---
@@ -404,6 +406,24 @@ def button_click(self,**event_args):
   #setting route = False stops the Route Form using the routing module...
 
 ```
+
+---
+
+## My `url_dict` contains the & symbol 
+
+let's say your `url_dict` is `{'name': 'A & B'}` doing the following will cause a problem
+
+```python
+routing.set_url_hash('customer?name=A&B')
+```
+
+instead do
+
+```python
+routing.set_url_hash(url_pattern='customer', url_dict={'name':'A&B'})
+```
+
+HashRouting will encode this correctly
 
 ---
 
