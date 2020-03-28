@@ -5,7 +5,7 @@ from ._logging import logger
 #to print route logging messages set routing.logger.debug = True above your main_router form
 
 
-path = namedtuple('path', ['form','url_pattern','url_keys','title','f_w_r','properties'])
+path = namedtuple('path', ['form','url_pattern','url_keys','title','f_w_r'])
 
 """private globals"""
 _paths = []  #List[path]
@@ -14,6 +14,7 @@ _cache = {} #url_pattern: string, url_dict: dict, form: Form()
 _current_form = None  # the current form that should be on the content panel - this is useful for slow form loads and quick navigation
 _main_router = None  # this will be the main router - get_open_form() can break if the main_router hasn't loaded yet 
 _on_navigation_stack_depth = 0
+_properties = {}
 
 """
 Terminology and examples
@@ -129,7 +130,7 @@ def main_router(Cls):
       elif path:
         title = path.title if path.title is None else path.title.format(**url_dict)
         _cache[url_hash] = path.form(url_hash=url_hash, url_pattern=url_pattern, url_dict=url_dict, 
-                                        _route_title=title,    f_w_r = path.f_w_r,  from_routing=True, **path.properties)
+                                        _route_title=title,    f_w_r = path.f_w_r,  from_routing=True, **_properties)
         logger.print(f"loaded {_cache[url_hash].__name__}, added to cache")
       else:
         raise Exception('bad load_form called')
@@ -190,7 +191,7 @@ class route():
                                 route=route, from_routing=from_routing, **properties)
     
     Route.__name__ = Cls.__name__  #prevents the form being called Route
-    _paths.append(path(Route, self.url_pattern, self.url_keys, self.title, self.f_w_r, {}))
+    _paths.append(path(Route, self.url_pattern, self.url_keys, self.title, self.f_w_r))
     
     return Route
 
@@ -306,7 +307,8 @@ def set_url_hash(url_hash=None, *, #the remaining are keyword only arguments
                  replace_current_url=False, 
                  set_in_history     =True,
                  redirect           =True, 
-                 load_from_cache    =True
+                 load_from_cache    =True,
+                 **properties
                 ):
   """either provide a url_hash or a url_pattern or a url_pattern and url_dict
   note: url_hash can be a dictionary: set_url_hash({'key':value}) is valid and would set the url_hash="#?key=value"
@@ -324,6 +326,8 @@ def set_url_hash(url_hash=None, *, #the remaining are keyword only arguments
                       = False -  on_navigation won't be fired
   load_from_cache     = True - on_navigation will load from _cache if the url_hash exists in _cache
                       = False - the url_hash is removed from _cache
+  
+  properties          any additional kwargs will be passed to the form
   """
   if not set_in_history and not replace_current_url:
     raise Exception('cannot do set_in_history=False and replace_current_url=False\nPushing new url without adding to history stack is impossible')
@@ -347,6 +351,9 @@ def set_url_hash(url_hash=None, *, #the remaining are keyword only arguments
   elif not set_in_history and     replace_current_url:
     logger.print(f"setting url_hash to: #{url_hash}, replacing current_url, NOT setting in history")
     anvil.js.call_js('replaceUrlNotState', '#'+url_hash)
+  
+  global _properties 
+  _properties = properties
   
   if redirect:
     _main_router.on_navigation(url_hash, url_pattern, url_dict)
@@ -395,10 +402,10 @@ def load_form(form, url_pattern=None, url_keys=[], *, replace_current_url=False,
     remove_from_cache(url_hash)
 
   
-  path.properties.update(**properties)  # load the properties to path
+  global _properties
+  _properties = properties
+  
   _main_router.on_navigation(url_hash=url_hash, url_pattern=url_pattern, url_dict=url_dict, path=path)
-  for key in path.properties:  # set the properties back to an empty dict
-    del path.properties[key]
   
 
 def load_error_form():
