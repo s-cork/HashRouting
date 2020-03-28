@@ -249,7 +249,11 @@ def get_url_components(url_hash=None):
     key_value_pairs = url_dict.split('&')
     for i, pair in enumerate(key_value_pairs):
       if '=' not in pair:
-        key_value_pairs[i] = pair + '='
+        logger.print(f"\n\n**WARNING**:\ngot an unusual url parameter with no '=': {pair}"
+                     f"\nIf this parameter split unexpectedly it probably contains '&'. Use:"
+                     f"\nrouting.set_url_hash(url_pattern=url_pattern, url_dict=url_dict)"
+                     f"\nFor correct encoding\n")
+        key_value_pairs[i] = pair = pair + '='
       key, value = pair.split('=',1)  
       key_value_pairs[i]   = f"{key}={anvil.http.url_decode(value)}"      
     url_dict = dict(pair.split('=', 1) for pair in key_value_pairs)
