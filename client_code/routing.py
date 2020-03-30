@@ -170,6 +170,9 @@ class route():
     class Route(Cls):
       def __init__(self, url_hash=None, url_pattern=None, url_dict=None, _route_title=None, f_w_r=False,
                    route=True, from_routing=False, **properties):
+        global _properties
+        _properties = {} # reset _properties as early as possible
+
         if route:
           if not from_routing:
             raise Exception(f'{self.__name__} is a route form and was not loaded from routing - check the docs - or set route=False to ignore routing behaviour')

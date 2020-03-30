@@ -283,7 +283,7 @@ load_from_cache     = True  # Set to False if you want the new URL to NOT load f
 
 You can set each `Route Form` to have a `title` parameter which will change the page title  
 
-If you do not provide a title then the page title will be the default title provided by Anvil in your titles and logs
+If you do not provide a title then the page title will be the default title provided by Anvil in your titles and logos
 
 **Examples**:
 
