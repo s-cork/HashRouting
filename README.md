@@ -126,10 +126,10 @@ With parameters:
 
 ```python
 # option 1
-set_url_hash(f'article?id={self.item['id']}')
+set_url_hash(f'article?id={self.item["id"]}')
 
 # option 2
-routing.set_url_hash(f'article?id={self.item['id']}')
+routing.set_url_hash(f'article?id={self.item["id"]}')
 
 # option 3
 routing.set_url_hash(url_pattern='article', url_dict={'id':self.item['id']})
