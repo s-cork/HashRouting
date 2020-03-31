@@ -8,6 +8,32 @@ HashRouting - a dependency for anvil.works that allows navigation in apps
 |Live Example: |[hash-routing-example.anvil.app](https://hash-routing-example.anvil.app/) |
 |Example Clone Link with dependency: | [<img src="https://anvil.works/img/forum/copy-app.png" height='40px'>](https://anvil.works/build#clone:JVKXENWGKTU6IO7Y=O62PB7QCYEEU4ZBDTJQ6V6W4%7cZKNOF5FRVLPVF4BI=JHFO3AIV2GTM5ZP4FPFL3SMI)|
 
+- **Contents**
+  - [Introduction](#introduction)
+  - [Main Form](#main-form)
+  - [All Route Forms](#all-route-forms)
+  - [Home form](#home-form)
+  - [Error form (Optional)](#error-form-optional)
+  - [Navigation](#navigation)
+- [Notes and Examples]()
+  - [Form Arguments](#form-arguments)
+  - [Security](#security)
+  - [Multiple Route Decorators](#multiple-route-decorators)
+  - [Navigation Techniques](#navigation-techniques)
+  - [Page Titles](#page-titles)
+  - [Full Width Rows](#full-width-rows)
+  - [Selected Links](#selected-links)
+  - [Preventing a Form from Unloading (when navigating within the app)](#preventing-a-form-from-unloading-when-navigating-within-the-app)
+  - [Passing properties to a form](#passing-properties-to-a-form)
+  - [Sometimes my Route Form is a Route Form sometimes it is a Component](#sometimes-my-route-form-is-a-route-form-sometimes-it-is-a-component)
+  - [My `url_dict` contains the & symbol](#my-urldict-contains-the--symbol)
+  - [I have a login form how do I work that?](#i-have-a-login-form-how-do-i-work-that)
+  - [I have a page that is deleted - how do I remove it from the cache?](#i-have-a-page-that-is-deleted---how-do-i-remove-it-from-the-cache)
+  - [Form Show is important](#form-show-is-important)
+  - [List of Methods](#list-of-methods)
+  - [A Note on `load_form` with Multiple Decorators](#a-note-on-loadform-with-multiple-decorators)
+  - [Routing Debug Print Statements](#routing-debug-print-statements)
+  - [Leaving the app](#leaving-the-app)
 
 ---
 ## Introduction
