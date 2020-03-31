@@ -1,11 +1,11 @@
-import anvil
-from collections import namedtuple
+import anvil as _anvil
+from collections import namedtuple as _namedtuple
 from ._logging import logger  
 
 #to print route logging messages set routing.logger.debug = True above your main_router form
 
 
-path = namedtuple('path', ['form','url_pattern','url_keys','title','f_w_r'])
+path = _namedtuple('path', ['form','url_pattern','url_keys','title','f_w_r'])
 
 """private globals"""
 _paths = []  #List[path]
@@ -73,14 +73,14 @@ def main_router(Cls):
         # ... do need to do something when the form is hidden use the form_hide event instead
         # To stop_unload return a value from the before_unload method
         """
-        anvil.js.call_js('setUnloadPopStateBehaviour',True)
+        _anvil.js.call_js('setUnloadPopStateBehaviour',True)
         stop_unload = _current_form.before_unload()    
         if stop_unload:
           logger.print(f"stop unload called from {_current_form.__name__}")
-          anvil.js.call_js('stopUnload')
+          _anvil.js.call_js('stopUnload')
           _on_navigation_stack_depth -= 1
           return   #this will stop the navigation
-        anvil.js.call_js('setUnloadPopStateBehaviour',False)
+        _anvil.js.call_js('setUnloadPopStateBehaviour',False)
       
       if not (url_hash and url_pattern and url_dict):
         url_hash, url_pattern, url_dict = get_url_components()
@@ -99,7 +99,7 @@ def main_router(Cls):
         logger.print(f'no route form with url_pattern={url_pattern} and url_keys={url_dict.keys()}')
         if _error_form is not None:
           load_error_form()
-        if anvil.get_open_form(): # raising an exception before there is an open form stops anything loading
+        if _anvil.get_open_form(): # raising an exception before there is an open form stops anything loading
           raise # if you can't work out why your page won't load then take raise out of this if block...
       except:
         raise  # this was an unexpected error so raise it
@@ -141,7 +141,7 @@ def main_router(Cls):
         form.url_pattern = url_pattern
         form.url_dict    = url_dict
         
-        anvil.js.call_js('setTitle', form._route_title)
+        _anvil.js.call_js('setTitle', form._route_title)
         self.content_panel.clear()
         self.content_panel.add_component(form, full_width_row = form._f_w_r)
 
@@ -238,13 +238,13 @@ def get_url_components(url_hash=None):
   this will get the components from the current addressbar url_hash unless you provide a url_hash to decode
   """
   if url_hash is None:
-    #url_hash = anvil.get_url_hash()  #changed since anvil decodes the url_hash
-    url_hash  = anvil.js.call_js('getUrlHash')
+    #url_hash = _anvil.get_url_hash()  #changed since _anvil decodes the url_hash
+    url_hash  = _anvil.js.call_js('getUrlHash')
   if isinstance(url_hash,dict):
     # this is the case when anvil converts the url hash to a dict automatically
     url_pattern = ''
-    url_dict    = {k:(anvil.http.url_decode(v) if v != 'undefined' else '') for k,v in url_hash.items()} #anvil.get_url_hash return 'undefined' for empty parameters
-    url_hash    = '?' + '&'.join(f'{key}={anvil.http.url_encode(value)}' for key,value in url_dict.items())
+    url_dict    = {k:(_anvil.http.url_decode(v) if v != 'undefined' else '') for k,v in url_hash.items()} #anvil.get_url_hash return 'undefined' for empty parameters
+    url_hash    = '?' + '&'.join(f'{key}={_anvil.http.url_encode(value)}' for key,value in url_dict.items())
   elif url_hash.find('?')==-1: # then we have no parameters as part of the url 
     url_pattern = url_hash
     url_dict    = {}
@@ -259,7 +259,7 @@ def get_url_components(url_hash=None):
                      f"\nFor correct encoding\n")
         key_value_pairs[i] = pair = pair + '='
       key, value = pair.split('=',1)  
-      key_value_pairs[i]   = f"{key}={anvil.http.url_decode(value)}"      
+      key_value_pairs[i]   = f"{key}={_anvil.http.url_decode(value)}"      
     url_dict = dict(pair.split('=', 1) for pair in key_value_pairs)
 
   return url_hash, url_pattern, url_dict
@@ -348,13 +348,13 @@ def set_url_hash(url_hash=None, *, #the remaining are keyword only arguments
   
   if       set_in_history and not replace_current_url:
     logger.print(f"setting url_hash to: #{url_hash}, adding to top of history stack")
-    anvil.js.call_js('pushState', '#'+url_hash)
+    _anvil.js.call_js('pushState', '#'+url_hash)
   elif     set_in_history and    replace_current_url:
     logger.print(f"setting url_hash to: #{url_hash}, replacing current_url, setting in history")
-    anvil.js.call_js('replaceState', '#'+url_hash)
+    _anvil.js.call_js('replaceState', '#'+url_hash)
   elif not set_in_history and     replace_current_url:
     logger.print(f"setting url_hash to: #{url_hash}, replacing current_url, NOT setting in history")
-    anvil.js.call_js('replaceUrlNotState', '#'+url_hash)
+    _anvil.js.call_js('replaceUrlNotState', '#'+url_hash)
   
   global _properties 
   _properties = properties
@@ -394,13 +394,13 @@ def load_form(form, url_pattern=None, url_keys=[], *, replace_current_url=False,
 
   if replace_current_url and set_in_history:
     logger.print(f"loading form {form.__name__}, with url_hash: #{url_hash}, replacing current url, setting in history")
-    anvil.js.call_js('replaceState','#' + url_hash)
+    _anvil.js.call_js('replaceState','#' + url_hash)
   elif replace_current_url:
     logger.print(f"loading form {form.__name__}, with url_hash: #{url_hash}, replacing current url, NOT setting in history")
-    anvil.js.call_js('replaceUrlNotState', '#' + url_hash)
+    _anvil.js.call_js('replaceUrlNotState', '#' + url_hash)
   else:
     logger.print(f"loading form {form.__name__}, with url_hash: #{url_hash}, adding to top of history stack")
-    anvil.js.call_js('pushState', '#' + url_hash)
+    _anvil.js.call_js('pushState', '#' + url_hash)
     
   if not load_from_cache:
     remove_from_cache(url_hash)
@@ -414,7 +414,7 @@ def load_form(form, url_pattern=None, url_keys=[], *, replace_current_url=False,
 
 def load_error_form():
   """loads the error form - note that the url_hash is not changed
-  could make this #404 if desired by adding anvil.js.call_js('replaceState',"#404")
+  could make this #404 if desired by adding _anvil.js.call_js('replaceState',"#404")
   """
   logger.print("loading error form")
   url_hash, _, _ = get_url_components()
@@ -437,7 +437,7 @@ def _get_url_dict(url_keys, form, **properties):
   
 
 def _get_url_hash(url_pattern, url_dict):
-  url_params  = '&'.join(f'{key}={anvil.http.url_encode(str(value))}'for key, value in url_dict.items())
+  url_params  = '&'.join(f'{key}={_anvil.http.url_encode(str(value))}'for key, value in url_dict.items())
   url_params  = '?' + url_params if url_params else ''
   return url_pattern + url_params
 
@@ -448,7 +448,7 @@ def _finditem(obj, key):
   if key in obj: 
     return obj[key]
   for k, v in obj.items():
-    if isinstance(v,dict) or isinstance(v, anvil.LiveObjectProxy):
+    if isinstance(v,dict) or isinstance(v, _anvil.LiveObjectProxy):
       item = _finditem(v, key)
       if item is not None:
         return item
@@ -489,7 +489,7 @@ def _process_url_arguments(url_hash=None, *, url_pattern=None, url_dict=None):
 def set_warning_before_app_unload(warning=True):
   if not isinstance(warning, bool):
     raise TypeError(f"warning={warning} must be a boolean")
-  anvil.js.call_js('setAppUnloadBehaviour', warning)
+  _anvil.js.call_js('setAppUnloadBehaviour', warning)
 
 def replace_current_url(url_hash, *args, redirect=False, set_in_history=True, **kwargs):
   raise AttributeError(f'replace_current_url depriciated, use: \nrouting.set_url_hash({url_hash}, \nreplace_current_url=True, \nredirect={redirect}, \nset_in_history={set_in_history})')
