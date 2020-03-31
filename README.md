@@ -15,7 +15,7 @@ HashRouting - a dependency for anvil.works that allows navigation in apps
   - [Home form](#home-form)
   - [Error form (Optional)](#error-form-optional)
   - [Navigation](#navigation)
-- [Notes and Examples]()
+- [Notes and Examples](#notes-and-examples)
   - [Form Arguments](#form-arguments)
   - [Security](#security)
   - [Multiple Route Decorators](#multiple-route-decorators)
