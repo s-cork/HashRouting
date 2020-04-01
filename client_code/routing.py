@@ -5,7 +5,7 @@ from ._logging import logger
 #to print route logging messages set routing.logger.debug = True above your main_router form
 
 
-path = _namedtuple('path', ['form','url_pattern','url_keys','title','f_w_r'])
+_path = _namedtuple('_path', ['form','url_pattern','url_keys','title','f_w_r'])
 
 """private globals"""
 _paths = []  #List[path]
@@ -195,7 +195,7 @@ class route():
                                 route=route, from_routing=from_routing, **properties)
     
     Route.__name__ = Cls.__name__  #prevents the form being called Route
-    _paths.append(path(Route, self.url_pattern, self.url_keys, self.title, self.f_w_r))
+    _paths.append(_path(Route, self.url_pattern, self.url_keys, self.title, self.f_w_r))
     
     return Route
 
