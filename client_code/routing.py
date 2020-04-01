@@ -173,23 +173,24 @@ class route():
         global _properties
         _properties = {} # reset _properties as early as possible
 
+        self.route        = route
+        self.from_routing = from_routing
+
         if route:
           if not from_routing:
             raise Exception(f'{self.__name__} is a route form and was not loaded from routing - check the docs - or set route=False to ignore routing behaviour')
           global _current_form
-          _current_form = self #this is the form that should be displayed can cause some issues if this form takes a while to load          
+          _current_form = self #this is the form that should be displayed
 
           self.url_hash     = url_hash
           self.url_pattern  = url_pattern
           self.url_dict     = url_dict
           self._route_title = _route_title
           self._f_w_r       = f_w_r
-          self.route        = route
-          self.from_routing = from_routing
          
         if 'anvil' in str(Cls.__bases__):  # then this was the original class Form(FormTemplate) Class
           Cls.__init__(self, **properties)  # prevents console logging 'Ignoring form constructor kwarg:' which is annoying
-        else: # we have a multple decorator so re-pass route kwargs
+        else: # we have a multiple decorator so re-pass route kwargs
           Cls.__init__(self, url_hash=url_hash,  url_pattern=url_pattern, url_dict=url_dict, _route_title=_route_title, f_w_r=f_w_r,
                                 route=route, from_routing=from_routing, **properties)
     
