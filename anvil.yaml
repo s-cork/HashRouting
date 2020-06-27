@@ -43,7 +43,8 @@ native_deps: {head_html: "<script>\n// need to think about what happens if we vi
     \ state = window.history.state\n    window.history.replaceState(state, '' ,url)\n\
     \    window.undo = 0  \n};\n\n  \nfunction setTitle(title) {\n  if (title ===\
     \ null){\n    $(\"title\").text(window.defaultTitle)\n  }\n  else{\n    $(\"title\"\
-    ).text(title)\n  };\n};\n  \n\n\n  \n</script>\n\n\n<script>\n\n  \nfunction setAppUnloadBehaviour(warning){\n\
+    ).text(title)\n  };\n};\n  \n\nfunction reloadPage() {\n  window.location.reload();\n\
+    }\n  \n</script>\n\n\n<script>\n\n  \nfunction setAppUnloadBehaviour(warning){\n\
     \  if (warning){\n    window.onbeforeunload = onBeforeUnload;\n  }\n  else{\n\
     \    window.onbeforeunload = () => {};  // unbind onbeforeunload\n  };\n  \n};\n\
     \n  \nfunction setUnloadPopStateBehaviour(flag){\n  if (flag){\n    window.onpopstate\
@@ -61,6 +62,5 @@ native_deps: {head_html: "<script>\n// need to think about what happens if we vi
     \    sessionStorage.setItem('currentPos', pos)\n    state = {url: url, pos: pos}\n\
     \    window.history.replaceState(state,'')\n    window.onbeforeunload = () =>\
     \ {}; \n    window.location.reload() \n  };\n};\n  \n  \n</script>\n"}
-dependency_order: []
-dependency_code: {}
+db_schema: []
 renamed: true
