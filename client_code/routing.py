@@ -353,7 +353,7 @@ def set_url_hash(url_hash=None, *, #the remaining are keyword only arguments
   ### process the url_arguments
   url_hash, url_pattern, url_dict = _process_url_arguments(url_hash, url_pattern=url_pattern, url_dict=url_dict)
 
-  if url_hash == get_url_hash() and url_hash not in _cache and _current_form is not None:
+  if url_hash == get_url_hash() and _current_form is not None:
     return  #should not continue if url_hash is identical to the addressbar hash!
 
   # remove from cache  
@@ -404,7 +404,7 @@ def load_form(form, url_pattern=None, url_keys=[], *, replace_current_url=False,
   if not replace_current_url and not set_in_history:
     raise Exception('cannot do set_in_history=False and replace_current_url=False')
 
-  if url_hash == get_url_hash() and url_hash not in _cache and _current_form is not None:
+  if url_hash == get_url_hash() and _current_form is not None:
     return  #should not continue if url_hash is identical to the addressbar hash!
 
   if replace_current_url and set_in_history:
@@ -439,6 +439,9 @@ def load_error_form():
   _main_router.content_panel.clear()
   _main_router.content_panel.add_component(_cache[url_hash])
 
+def reload_page():
+  """reload the current page"""
+  _anvil.js.call_js('reloadPage')
 
 """Helper functions for load_form"""
 def _get_url_dict(url_keys, form, **properties):
