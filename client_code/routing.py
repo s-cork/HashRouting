@@ -190,18 +190,19 @@ class route():
         self.route        = route
         self.from_routing = from_routing
 
+        self.url_hash     = url_hash
+        self.url_pattern  = url_pattern
+        self.url_dict     = url_dict
+        self._route_title = _route_title
+        self._f_w_r       = f_w_r
+
         if route:
           if not from_routing:
             raise Exception(f'{self.__name__} is a route form and was not loaded from routing - check the docs - or set route=False to ignore routing behaviour')
           global _current_form
           _current_form = self #this is the form that should be displayed
 
-          self.url_hash     = url_hash
-          self.url_pattern  = url_pattern
-          self.url_dict     = url_dict
-          self._route_title = _route_title
-          self._f_w_r       = f_w_r
-         
+
         if 'anvil' in str(Cls.__bases__):  # then this was the original class Form(FormTemplate) Class
           Cls.__init__(self, **properties)  # prevents console logging 'Ignoring form constructor kwarg:' which is annoying
         else: # we have a multiple decorator so re-pass route kwargs
