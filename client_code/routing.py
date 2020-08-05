@@ -10,11 +10,17 @@
 
     Source code published at https://github.com/s-cork/HashRouting
 """
+# fmt: off
 
+from collections import namedtuple as _namedtuple
 
 import anvil as _anvil
-from collections import namedtuple as _namedtuple
-from ._logging import logger  
+
+from ._logging import logger
+
+# from logging import log
+
+
 
 #to print route logging messages set routing.logger.debug = True above your main_router form
 
@@ -62,7 +68,7 @@ def main_router(Cls):
         self.on_navigation()  # called the first time the form is loaded to start routing...
 
         
-    def on_navigation(self, url_hash=None, url_pattern=None, url_dict=None, path=None):
+    def on_navigation(self, url_hash=None, url_pattern=None, url_dict=None, path=None, dynamic_vars=None):
       # when there is navigation - back/forward navigation
       # or when the user changes the url_hash or when you call anvil.set_url_hash in code
       
@@ -108,7 +114,7 @@ def main_router(Cls):
 
       try:
         if url_hash not in _cache and path is None:
-          path = self.find_path(url_hash, url_pattern, url_dict)
+          path, dynamic_vars = self.find_path(url_hash, url_pattern, url_dict)
       except KeyError:
         logger.print(f'no route form with url_pattern={url_pattern} and url_keys={url_dict.keys()}')
         if _error_form is not None:
@@ -119,22 +125,48 @@ def main_router(Cls):
         raise  # this was an unexpected error so raise it
       else:
         self.content_panel.clear()  # clear the form now just incase we end up with a new to cache form that is slow to load later
-        self.load_form(url_hash=url_hash, url_pattern=url_pattern, url_dict=url_dict, path=path)
+        self.load_form(url_hash=url_hash, url_pattern=url_pattern, url_dict=url_dict, path=path, dynamic_vars=dynamic_vars)
       
       _on_navigation_stack_depth -= 1
 
 
     def find_path(self, url_hash, url_pattern, url_dict):
       # this method is called whenever we have form to load from navigation that is not in the cache 
+      given_url_parts = url_pattern.split('/') # determine the individual portions
+      # of this deep link. N.B. this disallows using a '/' within the dynamic variable
+      num_given_url_parts = len(given_url_parts)
+      logger.print(f'[find_path] searching {_paths}')
       for path in _paths:
-        if path.url_pattern == url_pattern and set(url_dict) == set(path.url_keys):
-          return path
+        dynamic_vars = {}
+        target_url_parts = path.url_pattern.split('/')
+        logger.print(f'[find_path] trying {path.url_pattern} against {url_pattern}'
+                     f'; {given_url_parts} -> {target_url_parts}')
+        if num_given_url_parts != len(target_url_parts):
+          # url pattern CANNOT fit, skip deformatting
+          logger.print('[find_path] pattern cannot fit')
+          continue
+        for given, expected in zip(given_url_parts, target_url_parts):
+          logger.print(f'[find_path] testing {given} against {expected}')
+          if expected.startswith('{') and expected.endswith('}'):
+            # dynamic variable
+            logger.print(f'[find_path] found dynamic variable {expected[1:-1]}')
+            dynamic_vars[expected[1:-1]] = given
+          elif given != expected:
+            logger.print(f"[find_path] {expected} isn't a dynamic variable and doesn't match {given}")
+            break
+        else:
+          # given path matches expected path
+          logger.print(f'[find_path] {url_pattern} matches {path.url_pattern}')
+          if set(url_dict) == set(path.url_keys):
+            # only return if the url_dict matches
+            logger.print(f'[find_path] {url_dict} matches {path.url_keys}')
+            return path, dynamic_vars
       else:
         #if no break we haven't found a valid hash so load the error form  
         raise KeyError(f'{url_hash} does not exist')
     
     
-    def load_form(self, url_hash, url_pattern, url_dict, path=None):
+    def load_form(self, url_hash, url_pattern, url_dict, dynamic_vars, path=None):
       global _current_form
       
       if url_hash in _cache:  
@@ -142,8 +174,8 @@ def main_router(Cls):
         logger.print(f"loaded {_cache[url_hash].__name__} from cache")
         _current_form = _cache[url_hash]
       elif path:
-        title = path.title if path.title is None else path.title.format(**url_dict)
-        _cache[url_hash] = path.form(url_hash=url_hash, url_pattern=url_pattern, url_dict=url_dict, 
+        title = path.title if path.title is None else path.title.format(**url_dict, **dynamic_vars)
+        _cache[url_hash] = path.form(url_hash=url_hash, url_pattern=url_pattern, url_dict=url_dict, dynamic_vars=dynamic_vars,
                                         _route_title=title,    f_w_r = path.f_w_r,  from_routing=True, **_properties)
         logger.print(f"loaded {_cache[url_hash].__name__}, added to cache")
       else:
@@ -182,7 +214,7 @@ class route():
       raise TypeError(f'title must be type str or None not {type(self.title).__name__} in {Cls.__name__}')
     
     class Route(Cls):
-      def __init__(self, url_hash=None, url_pattern=None, url_dict=None, _route_title=None, f_w_r=False,
+      def __init__(self, url_hash=None, url_pattern=None, url_dict=None, dynamic_vars=None, _route_title=None, f_w_r=False,
                    route=True, from_routing=False, **properties):
         global _properties
         _properties = {} # reset _properties as early as possible
@@ -193,6 +225,7 @@ class route():
         self.url_hash     = url_hash
         self.url_pattern  = url_pattern
         self.url_dict     = url_dict
+        self.dynamic_vars = dynamic_vars
         self._route_title = _route_title
         self._f_w_r       = f_w_r
 
@@ -399,7 +432,9 @@ def load_form(form, url_pattern=None, url_keys=[], *, replace_current_url=False,
   except:
     raise
 
-  url_pattern = path.url_pattern
+  dynamic_varnames = {i[1:-1] for i in path.url_pattern.split('/') if i.startswith('{') and i.endswith('}')}
+  dynamic_vars = {key: value for key, value in properties.items() if key in dynamic_varnames}
+  url_pattern = path.url_pattern.format(**dynamic_vars)  # expand dynamic variables
   url_dict    = _get_url_dict(path.url_keys, form, **properties)
   url_hash    = _get_url_hash(url_pattern, url_dict)
   
@@ -427,7 +462,7 @@ def load_form(form, url_pattern=None, url_keys=[], *, replace_current_url=False,
   global _properties
   _properties = properties
   
-  _main_router.on_navigation(url_hash=url_hash, url_pattern=url_pattern, url_dict=url_dict, path=path)
+  _main_router.on_navigation(url_hash=url_hash, url_pattern=url_pattern, url_dict=url_dict, path=path, dynamic_vars=dynamic_vars)
   
 
 def load_error_form():
@@ -518,4 +553,3 @@ def set_warning_before_app_unload(warning=True):
 
 def replace_current_url(url_hash, *args, redirect=False, set_in_history=True, **kwargs):
   raise AttributeError(f'replace_current_url depriciated, use: \nrouting.set_url_hash({url_hash}, \nreplace_current_url=True, \nredirect={redirect}, \nset_in_history={set_in_history})')
-
