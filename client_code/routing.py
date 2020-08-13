@@ -113,7 +113,7 @@ def main_router(Cls):
         logger.print(f'no route form with url_pattern={url_pattern} and url_keys={url_dict.keys()}')
         if _error_form is not None:
           load_error_form()
-        if _anvil.get_open_form(): # raising an exception before there is an open form stops anything loading
+        elif _anvil.get_open_form(): # raising an exception before there is an open form stops anything loading
           raise # if you can't work out why your page won't load then take raise out of this if block...
       except:
         raise  # this was an unexpected error so raise it
