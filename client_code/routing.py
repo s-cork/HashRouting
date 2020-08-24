@@ -455,7 +455,7 @@ def reload_page(hard=False):
 def go_back():
   _anvil.js.call_js('goBack')
 
-def go(x):
+def go(x=0):
   if (not isinstance(x, int)):
     raise TypeError(f'go requires an int not {type(x)}')
   _anvil.js.call_js('goTo', x)
