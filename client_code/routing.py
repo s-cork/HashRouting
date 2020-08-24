@@ -535,7 +535,4 @@ def set_warning_before_app_unload(warning=True):
     raise TypeError(f"warning={warning} must be a boolean")
   _anvil.js.call_js('setAppUnloadBehaviour', warning)
 
-def replace_current_url(url_hash, *args, redirect=False, set_in_history=True, **kwargs):
-  raise AttributeError(f'replace_current_url depriciated, use: \nrouting.set_url_hash({url_hash}, \nreplace_current_url=True, \nredirect={redirect}, \nset_in_history={set_in_history})')
-
 
