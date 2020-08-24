@@ -14,7 +14,8 @@
 
 import anvil as _anvil
 from collections import namedtuple as _namedtuple
-from ._logging import logger  
+from ._logging import logger
+from ._sessionexpired import SessionExpired
 
 #to print route logging messages set routing.logger.debug = True above your main_router form
 
@@ -442,6 +443,8 @@ def load_error_form():
   _main_router.content_panel.clear()
   _main_router.content_panel.add_component(_cache[url_hash])
 
+  
+"""navigation"""
 def reload_page(hard=False):
   """reload the current page"""
   if hard:
@@ -449,6 +452,16 @@ def reload_page(hard=False):
   else:
     remove_from_cache(get_url_hash())
     _main_router.on_navigation()
+
+
+def go_back():
+  _anvil.server.call_js('goBack')
+
+def go(x):
+  if (not isinstance(x, int)):
+    raise TypeError(f'go requires an int not {type(x)}')
+  _anvil.server.call_js('goTo', x)
+
 
 """Helper functions for load_form"""
 def _get_url_dict(url_keys, form, **properties):
@@ -518,4 +531,5 @@ def set_warning_before_app_unload(warning=True):
 
 def replace_current_url(url_hash, *args, redirect=False, set_in_history=True, **kwargs):
   raise AttributeError(f'replace_current_url depriciated, use: \nrouting.set_url_hash({url_hash}, \nreplace_current_url=True, \nredirect={redirect}, \nset_in_history={set_in_history})')
+
 

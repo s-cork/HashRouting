@@ -44,7 +44,14 @@ native_deps: {head_html: "<script>\n// need to think about what happens if we vi
     \    window.undo = 0  \n};\n\n  \nfunction setTitle(title) {\n  if (title ===\
     \ null){\n    $(\"title\").text(window.defaultTitle)\n  }\n  else{\n    $(\"title\"\
     ).text(title)\n  };\n};\n  \n\nfunction reloadPage() {\n  window.location.reload();\n\
-    }\n  \n</script>\n\n\n<script>\n\n  \nfunction setAppUnloadBehaviour(warning){\n\
+    }\n\nfunction goBack() {\n  window.history.back();\n}\n\nfunction goTo(x) {\n\
+    \  window.history.go(x);\n}\n\nfunction sessionExpiredHandler(val) {\n  if (val)\
+    \ {\n//    $(\"#session-expired-modal\").on(\"click\", reloadPage)\n//    $(\"\
+    #session-expired-modal button.refresh\").css('display', 'none')\n    $(\"#session-expired-modal\
+    \ button.refresh\").load(function() {\n      console.log('load');\n      this.off('click').on('click',\
+    \ reloadPage)\n    })\n  } else {\n    $(\"#session-expired-modal\").off('click',\
+    \ reloadPage)\n    $(\"#session-expired-modal button.refresh\").removeAttr(\"\
+    style\");\n  }\n}\n\n</script>\n\n\n<script>\n\n  \nfunction setAppUnloadBehaviour(warning){\n\
     \  if (warning){\n    window.onbeforeunload = onBeforeUnload;\n  }\n  else{\n\
     \    window.onbeforeunload = () => {};  // unbind onbeforeunload\n  };\n  \n};\n\
     \n  \nfunction setUnloadPopStateBehaviour(flag){\n  if (flag){\n    window.onpopstate\
