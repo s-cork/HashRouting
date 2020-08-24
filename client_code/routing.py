@@ -15,7 +15,6 @@
 import anvil as _anvil
 from collections import namedtuple as _namedtuple
 from ._logging import logger
-from ._sessionexpired import SessionExpired
 
 #to print route logging messages set routing.logger.debug = True above your main_router form
 
@@ -453,14 +452,21 @@ def reload_page(hard=False):
     remove_from_cache(get_url_hash())
     _main_router.on_navigation()
 
-
 def go_back():
-  _anvil.server.call_js('goBack')
+  _anvil.js.call_js('goBack')
 
 def go(x):
   if (not isinstance(x, int)):
     raise TypeError(f'go requires an int not {type(x)}')
-  _anvil.server.call_js('goTo', x)
+  _anvil.js.call_js('goTo', x)
+
+  
+def on_session_expired(reload_hash=True, allow_cancel=True):
+  if type(reload_hash) is not bool:
+    raise TypeError(f'reload_hash must be a bool not {type(reload_hash)}')
+  if type(allow_cancel) is not bool:
+    raise TypeError(f'reload_hash must be a bool not {type(allow_cancel)}')
+  _anvil.js.call_js('sessionExpiredHandler', reload_hash, allow_cancel)
 
 
 """Helper functions for load_form"""
