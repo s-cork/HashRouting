@@ -10,17 +10,11 @@
 
     Source code published at https://github.com/s-cork/HashRouting
 """
-# fmt: off
-
-from collections import namedtuple as _namedtuple
 
 import anvil as _anvil
 
+from collections import namedtuple as _namedtuple
 from ._logging import logger
-
-# from logging import log
-
-
 
 #to print route logging messages set routing.logger.debug = True above your main_router form
 
@@ -119,7 +113,7 @@ def main_router(Cls):
         logger.print(f'no route form with url_pattern={url_pattern} and url_keys={url_dict.keys()}')
         if _error_form is not None:
           load_error_form()
-        if _anvil.get_open_form(): # raising an exception before there is an open form stops anything loading
+        elif _anvil.get_open_form(): # raising an exception before there is an open form stops anything loading
           raise # if you can't work out why your page won't load then take raise out of this if block...
       except:
         raise  # this was an unexpected error so raise it
@@ -477,6 +471,8 @@ def load_error_form():
   _main_router.content_panel.clear()
   _main_router.content_panel.add_component(_cache[url_hash])
 
+  
+"""navigation"""
 def reload_page(hard=False):
   """reload the current page"""
   if hard:
@@ -484,6 +480,23 @@ def reload_page(hard=False):
   else:
     remove_from_cache(get_url_hash())
     _main_router.on_navigation()
+
+def go_back():
+  _anvil.js.call_js('goBack')
+
+def go(x=0):
+  if (not isinstance(x, int)):
+    raise TypeError(f'go requires an int not {type(x)}')
+  _anvil.js.call_js('goTo', x)
+
+  
+def on_session_expired(reload_hash=True, allow_cancel=True):
+  if type(reload_hash) is not bool:
+    raise TypeError(f'reload_hash must be a bool not {type(reload_hash)}')
+  if type(allow_cancel) is not bool:
+    raise TypeError(f'allow_cancel must be a bool not {type(allow_cancel)}')
+  _anvil.js.call_js('sessionExpiredHandler', reload_hash, allow_cancel)
+
 
 """Helper functions for load_form"""
 def _get_url_dict(url_keys, form, **properties):
@@ -551,5 +564,6 @@ def set_warning_before_app_unload(warning=True):
     raise TypeError(f"warning={warning} must be a boolean")
   _anvil.js.call_js('setAppUnloadBehaviour', warning)
 
-def replace_current_url(url_hash, *args, redirect=False, set_in_history=True, **kwargs):
-  raise AttributeError(f'replace_current_url depriciated, use: \nrouting.set_url_hash({url_hash}, \nreplace_current_url=True, \nredirect={redirect}, \nset_in_history={set_in_history})')
+
+
+

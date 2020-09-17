@@ -43,18 +43,27 @@ native_deps: {head_html: "<script>\n// need to think about what happens if we vi
     \ state = window.history.state\n    window.history.replaceState(state, '' ,url)\n\
     \    window.undo = 0  \n};\n\n  \nfunction setTitle(title) {\n  if (title ===\
     \ null){\n    $(\"title\").text(window.defaultTitle)\n  }\n  else{\n    $(\"title\"\
-    ).text(title)\n  };\n};\n  \n\nfunction reloadPage() {\n  window.location.reload();\n\
-    }\n  \n</script>\n\n\n<script>\n\n  \nfunction setAppUnloadBehaviour(warning){\n\
-    \  if (warning){\n    window.onbeforeunload = onBeforeUnload;\n  }\n  else{\n\
-    \    window.onbeforeunload = () => {};  // unbind onbeforeunload\n  };\n  \n};\n\
-    \n  \nfunction setUnloadPopStateBehaviour(flag){\n  if (flag){\n    window.onpopstate\
-    \ = unloadPopStateTemp;\n  }\n  else {\n    window.onpopstate = onPopState;\n\
-    \  };\n};\n  \n  \n  //Form Unload Behaviour\n  \nfunction unloadPopStateTemp(e){\n\
-    \    e.preventDefault()\n    let state = e.state;\n    //console.log(state)\n\
-    \  const prevPos = Number(sessionStorage.getItem('currentPos'));\n  if (state){\n\
-    \      temp_undo = prevPos - state.pos \n      window.onpopstate = () => {}; \
-    \ // unbind onpopstate\n      window.history.go(temp_undo);  // reverse the navigation\n\
-    \      setTimeout(function() { \n      window.onpopstate = unloadPopStateTemp;\
+    ).text(title)\n  };\n};\n  \n\nfunction reloadPage() {\n  document.location.reload();\n\
+    }\n\nfunction goBack() {\n  window.history.back();\n}\n\nfunction goTo(x) {\n\
+    \  window.history.go(x);\n}\n\nfunction triggerRefresh() {\n  $(this).off('click');\n\
+    \  $(\"#session-expired-modal button\").trigger('click');\n}\n  \nfunction sessionExpiredHandler(reload_hash,\
+    \ allow_cancel) {\n  if (reload_hash) {\n    $(\"#session-expired-modal button\"\
+    ).removeClass('refresh')\n      .off('click').on('click', reloadPage)\n  } else\
+    \ {\n    $(\"#session-expired-modal button\").addClass('refresh')\n      .off('click')\n\
+    \  }\n  if (!allow_cancel) {\n    $(\"#session-expired-modal button\").css('display','none')\n\
+    \    $(\"#session-expired-modal\").off('click', triggerRefresh).on('click', triggerRefresh)\n\
+    \  } else {\n    $(\"#session-expired-modal button\").removeAttr('style')\n  \
+    \  $(\"#session-expired-modal\").off('click', triggerRefresh)\n  }\n}\n\n</script>\n\
+    \n\n<script>\n\n  \nfunction setAppUnloadBehaviour(warning){\n  if (warning){\n\
+    \    window.onbeforeunload = onBeforeUnload;\n  }\n  else{\n    window.onbeforeunload\
+    \ = () => {};  // unbind onbeforeunload\n  };\n  \n};\n\n  \nfunction setUnloadPopStateBehaviour(flag){\n\
+    \  if (flag){\n    window.onpopstate = unloadPopStateTemp;\n  }\n  else {\n  \
+    \  window.onpopstate = onPopState;\n  };\n};\n  \n  \n  //Form Unload Behaviour\n\
+    \  \nfunction unloadPopStateTemp(e){\n    e.preventDefault()\n    let state =\
+    \ e.state;\n    //console.log(state)\n  const prevPos = Number(sessionStorage.getItem('currentPos'));\n\
+    \  if (state){\n      temp_undo = prevPos - state.pos \n      window.onpopstate\
+    \ = () => {};  // unbind onpopstate\n      window.history.go(temp_undo);  // reverse\
+    \ the navigation\n      setTimeout(function() { \n      window.onpopstate = unloadPopStateTemp;\
     \ \n      }, 100)  //delay rebind while the go is executed\n  }\n  else {\n  \
     \  // the user is determined to navigate away and has changed the url manually\
     \ so let them!\n    // Not letting them will break the the app... \n    const\
