@@ -204,9 +204,11 @@ ___
 **Loading Forms**
 ```python
 routing.set_url_hash(url_hash, **kwargs)              
-routing.load_form(form, **properties)                 # nb:  form should NOT be initiated 
-                                                      # e.g. routing.load_form(Form1)
-routing.load_error_form()                             # loads error_form, adds to cache at current url
+routing.load_form(form, **properties)
+# nb:  form should NOT be initiated 
+# e.g. routing.load_form(Form1)
+routing.load_error_form()
+# loads error_form, adds to cache at current url
 ```
 
 **Decorators**
@@ -218,33 +220,43 @@ routing.load_error_form()                             # loads error_form, adds t
 
 **URL Components**
 ```python
-routing.get_url_components()                          # returns url_hash, url_pattern, url_dict
-routing.get_url_hash()                                # returns url_hash as a string
-routing.get_url_pattern()                             # returns url_pattern 
-routing.get_url_dict()                                # returns url_dict 
+routing.get_url_components()
+# returns url_hash, url_pattern, url_dict
+routing.get_url_hash()
+# returns url_hash as a string
+routing.get_url_pattern()
+# returns url_pattern 
+routing.get_url_dict()
+# returns url_dict 
 ```
 
 **Cache**
 ```python
 routing.remove_from_cache(url_hash)
-routing.add_to_cache(url_hash, form)                  # nb:  form should be initiated 
-                                                      # e.g. routing.add_to_cache('form1',Form1())  
-                                                      # or   routing.add_to_cache('form1', self) 
+routing.add_to_cache(url_hash, form)
+# nb:  form should be initiated 
+# e.g. routing.add_to_cache('form1',Form1())  
+# or   routing.add_to_cache('form1', self) 
 routing.clear_cache()
 routing.get_cache()
 ```
 
 **Bonus Navigation**
 ```python
-routing.go(x)                                         # go forward/back x number of pages (0 refreshes the page)
-routing.go_back()                                     # go back 1 page
-routing.reload_page(hard=False)                       # reload the current route_form (if hard = True the page will refresh)
+routing.go(x)
+# go forward/back x number of pages (0 refreshes the page)
+routing.go_back()
+# go back 1 page
+routing.reload_page(hard=False)
+# reload the current route_form (if hard = True the page will refresh)
 ```
 
 **Leaving the app**
 ```python
-routing.on_session_expired(reload_hash=True, allow_cancel=True) # override the default behaviour for a session expired see discussion
-routing.set_warning_before_app_unload(True)  # pop up a dialogue box when users navigate away from app
+routing.on_session_expired(reload_hash=True, allow_cancel=True) 
+# override the default behaviour for a session expired see discussion
+routing.set_warning_before_app_unload(True)  
+# pop up a dialogue box when users navigate away from app
 ```
 
 **Logging/debugging**
