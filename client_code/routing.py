@@ -197,7 +197,7 @@ class route():
       raise TypeError(f'keys should be a list or tuple not {type(self.url_keys).__name__} in {Cls.__name__}')
     if not (self.title is None or isinstance(self.title, str)):
       raise TypeError(f'title must be type str or None not {type(self.title).__name__} in {Cls.__name__}')
-    if self.url_pattern[-1] == "/":
+    if self.url_pattern and self.url_pattern[-1] == "/":
       self.url_pattern = self.url_pattern[:-1]
 
     class Route(Cls):
