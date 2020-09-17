@@ -338,6 +338,10 @@ def clear_cache():
   logger.print(f"clearing the cache")
   global _cache
   _cache = {}
+
+
+def get_cache():
+  return _cache
   
 
 def set_url_hash(url_hash=None, *, #the remaining are keyword only arguments
