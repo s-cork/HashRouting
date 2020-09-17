@@ -19,7 +19,7 @@ from ._logging import logger
 #to print route logging messages set routing.logger.debug = True above your main_router form
 
 
-_path = _namedtuple('_path', ['form','url_pattern','url_keys','title','f_w_r'])
+_path = _namedtuple('_path', ['form','url_pattern','url_keys','title','f_w_r', 'url_parts'])
 
 """private globals"""
 _paths = []  #List[path]
@@ -125,35 +125,26 @@ def main_router(Cls):
 
 
     def find_path(self, url_hash, url_pattern, url_dict):
-      # this method is called whenever we have form to load from navigation that is not in the cache 
+      # this method is called whenever we have form to load from navigation that is not in the cache
       given_url_parts = url_pattern.split('/') # determine the individual portions
       # of this deep link. N.B. this disallows using a '/' within the dynamic variable
       num_given_url_parts = len(given_url_parts)
-      logger.print(f'[find_path] searching {_paths}')
       for path in _paths:
         dynamic_vars = {}
-        target_url_parts = path.url_pattern.split('/')
-        logger.print(f'[find_path] trying {path.url_pattern} against {url_pattern}'
-                     f'; {given_url_parts} -> {target_url_parts}')
+        target_url_parts = path.url_parts
         if num_given_url_parts != len(target_url_parts):
           # url pattern CANNOT fit, skip deformatting
-          logger.print('[find_path] pattern cannot fit')
           continue
         for given, expected in zip(given_url_parts, target_url_parts):
-          logger.print(f'[find_path] testing {given} against {expected}')
           if expected.startswith('{') and expected.endswith('}'):
             # dynamic variable
-            logger.print(f'[find_path] found dynamic variable {expected[1:-1]}')
             dynamic_vars[expected[1:-1]] = given
           elif given != expected:
-            logger.print(f"[find_path] {expected} isn't a dynamic variable and doesn't match {given}")
             break
         else:
-          # given path matches expected path
-          logger.print(f'[find_path] {url_pattern} matches {path.url_pattern}')
+          # no break - given path matches expected path
           if set(url_dict) == set(path.url_keys):
             # only return if the url_dict matches
-            logger.print(f'[find_path] {url_dict} matches {path.url_keys}')
             return path, dynamic_vars
       else:
         #if no break we haven't found a valid hash so load the error form  
@@ -237,7 +228,7 @@ class route():
                                 route=route, from_routing=from_routing, **properties)
     
     Route.__name__ = Cls.__name__  #prevents the form being called Route
-    _paths.append(_path(Route, self.url_pattern, self.url_keys, self.title, self.f_w_r))
+    _paths.append(_path(Route, self.url_pattern, self.url_keys, self.title, self.f_w_r, self.url_pattern.split('/')))
     
     return Route
 
