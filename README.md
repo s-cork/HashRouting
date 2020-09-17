@@ -15,6 +15,8 @@ HashRouting - a dependency for anvil.works that allows navigation in apps
   - [Home form](#home-form)
   - [Error form (Optional)](#error-form-optional)
   - [Navigation](#navigation)
+  - [Dynamic Urls](#dynamic-urls)
+  - [List of Methods](#list-of-methods)
 - [Notes and Examples](#notes-and-examples)
   - [Form Arguments](#form-arguments)
   - [Security](#security)
@@ -30,7 +32,6 @@ HashRouting - a dependency for anvil.works that allows navigation in apps
   - [I have a login form how do I work that?](#i-have-a-login-form-how-do-i-work-that)
   - [I have a page that is deleted - how do I remove it from the cache?](#i-have-a-page-that-is-deleted---how-do-i-remove-it-from-the-cache)
   - [Form Show is important](#form-show-is-important)
-  - [List of Methods](#list-of-methods)
   - [A Note on `load_form` with Multiple Decorators](#a-note-on-load_form-with-multiple-decorators)
   - [Routing Debug Print Statements](#routing-debug-print-statements)
   - [Leaving the app](#leaving-the-app)
@@ -168,7 +169,93 @@ routing.load_form(ArticleForm, id=3)
 
 <br>
 
+---
+
+## Dynamic Urls
+
+I am grateful to @starwort who added a dynamic url feature and can be used as follows
+
+```python
+from HashRouting import routing
+
+@routing.route('article/{id}')
+class ArticleForm(ArticleFormTemplate):
+```
+
+You can then check the `id` using:
+```python
+    print(self.dynamic_vars) # {'id': 3}
+    print(self.dynamic_vars['id']) # 3
+```
+
+[Page Titles](#page-titles) should work the same way with `dynamic_vars` as they do with the `url_dict`
+
+```python
+from HashRouting import routing
+
+@routing.route('article/{id}', title='Article | {id}')
+class ArticleForm(ArticleFormTemplate):
+```
+
+___
+
+## List of Methods
+
+**Loading Forms**
+```python
+routing.set_url_hash(url_hash, **kwargs)              
+routing.load_form(form, **properties)                 # nb:  form should NOT be initiated 
+                                                      # e.g. routing.load_form(Form1)
+routing.load_error_form()                             # loads error_form, adds to cache at current url
+```
+
+**Decorators**
+```python
+@routing.main_router
+@routing.route()
+@routing.error_form
+```
+
+**URL Components**
+```python
+routing.get_url_components()                          # returns url_hash, url_pattern, url_dict
+routing.get_url_hash()                                # returns url_hash as a string
+routing.get_url_pattern()                             # returns url_pattern 
+routing.get_url_dict()                                # returns url_dict 
+```
+
+**Cache**
+```python
+routing.remove_from_cache(url_hash)
+routing.add_to_cache(url_hash, form)                  # nb:  form should be initiated 
+                                                      # e.g. routing.add_to_cache('form1',Form1())  
+                                                      # or   routing.add_to_cache('form1', self) 
+routing.clear_cache()
+routing.get_cache()
+```
+
+**Bonus Navigation**
+```python
+routing.go(x)                                         # go forward/back x number of pages (0 refreshes the page)
+routing.go_back()                                     # go back 1 page
+routing.reload_page(hard=False)                       # reload the current route_form (if hard = True the page will refresh)
+```
+
+**Leaving the app**
+```python
+routing.on_session_expired(reload_hash=True, allow_cancel=True) # override the default behaviour for a session expired see discussion
+routing.set_warning_before_app_unload(True)  # pop up a dialogue box when users navigate away from app
+```
+
+**Logging/debugging**
+```python
+routing.logger.debug = True
+```
+
+
 <br>
+
+___
 
 # Notes and Examples
 
@@ -400,7 +487,7 @@ def before_unload(self):
 
 *NB*: 
 - This method does not prevent a user from navigating away from the app entirely. 
-(see the section **Leaving the App** below)
+(see the section [Leaving the App](#leaving-the-app) below)
 
 ___
 
@@ -634,27 +721,6 @@ def form_show(self, **event_args):
   self.search_terms.text = search_text
   self.search(search_text)
 ```
----
-
-## List of Methods
-
-```python
-routing.get_url_components()                          # returns url_hash, url_pattern, url_dict
-routing.get_url_hash()                                # returns url_hash as a string
-routing.get_url_pattern()                             # returns url_pattern 
-routing.get_url_dict()                                # returns url_dict 
-
-routing.remove_from_cache(url_hash)
-routing.add_to_cache(url_hash, form)                  # nb:  form should be initiated 
-                                                      # e.g. routing.add_to_cache('form1',Form1())  
-                                                      # or   routing.add_to_cache('form1', self) 
-routing.clear_cache()
-
-routing.set_url_hash(url_hash, **kwargs)              
-routing.load_form(form, **properties)                 # nb:  form should NOT be initiated 
-                                                      # e.g. routing.load_form(Form1)
-routing.load_error_form()                             # loads error_form, adds to cache at current url
-```
 
 ---
 
@@ -672,11 +738,9 @@ class Home(HomeTemplate):
 raise KeyError("Home has multiple decorators - you must provide a url_pattern [and url_keys] with load_form()")
 ```
 
-Instead do: <br>
+Instead do:
 `routing.load_form(Home, url_pattern='home')` 
-<br>
 or
-<br>
  `routing.load_form(Home, url_pattern='')`
 
 ---
