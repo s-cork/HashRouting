@@ -154,8 +154,7 @@ def main_router(Cls):
     def load_form(self, url_hash, url_pattern, url_dict, dynamic_vars, path=None):
       global _current_form
       
-      if url_hash in _cache:  
-        logger.print(_cache)
+      if url_hash in _cache:
         logger.print(f"loaded {_cache[url_hash].__name__} from cache")
         _current_form = _cache[url_hash]
       elif path:
