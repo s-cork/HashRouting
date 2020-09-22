@@ -121,7 +121,7 @@ def main_router(Cls):
         self.content_panel.clear()  # clear the form now just incase we end up with a new to cache form that is slow to load later
         self.load_form(url_hash=url_hash, url_pattern=url_pattern, url_dict=url_dict, path=path, dynamic_vars=dynamic_vars)
       
-      _on_navigation_stack_depth -= 1
+      _on_navigation_stack_depth = 0 # reset fix bug
 
 
     def find_path(self, url_hash, url_pattern, url_dict):
