@@ -28,7 +28,7 @@ native_deps: {head_html: "<script>\n// need to think about what happens if we vi
     \ new url equivalent to push state\n    const pos = prevPos + 1\n    const url\
     \ = window.location.hash\n    sessionStorage.setItem('currentPos', pos)\n    state\
     \ = {url: url, pos: pos}\n    window.undo = -1\n    window.history.replaceState(state,'',state.url)\n\
-    \    \n  }\n  //console.log(state)\n  anvil.call($('.content'), \"on_navigation\"\
+    \    \n  }\n  //console.log(state)\n  anvil.call($('.content')[0], \"on_navigation\"\
     )\n};\n \n\nfunction stopUnload(){\n  window.onpopstate = () => {};  // unbind\
     \ onpopstate\n  window.history.go(window.undo);  // reverse the navigation\n \
     \ setTimeout(function() { \n    window.onpopstate = onPopState; \n    sessionStorage.setItem('currentPos',\
