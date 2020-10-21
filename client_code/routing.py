@@ -78,7 +78,7 @@ def main_router(Cls):
       _on_navigation_stack_depth += 1
 
       if getattr(_current_form,'before_unload', None): 
-        logger.print(f'{_current_form.__name__} before_unload called')
+        logger.print(f'{_current_form.__class__.__name__} before_unload called')
         """
         # before_unload in the form to be unloaded will be called here if the method exists
         # Mostly useful to prevent unloading the current form
@@ -90,7 +90,7 @@ def main_router(Cls):
         _anvil.js.call_js('setUnloadPopStateBehaviour',True)
         stop_unload = _current_form.before_unload()    
         if stop_unload:
-          logger.print(f"stop unload called from {_current_form.__name__}")
+          logger.print(f"stop unload called from {_current_form.__class__.__name__}")
           _anvil.js.call_js('stopUnload')
           _on_navigation_stack_depth -= 1
           return   #this will stop the navigation
@@ -155,13 +155,13 @@ def main_router(Cls):
       global _current_form
       
       if url_hash in _cache:
-        logger.print(f"loaded {_cache[url_hash].__name__} from cache")
+        logger.print(f"loaded {_cache[url_hash].__class__.__name__} from cache")
         _current_form = _cache[url_hash]
       elif path:
         title = path.title if path.title is None else path.title.format(**url_dict, **dynamic_vars)
         _cache[url_hash] = path.form(url_hash=url_hash, url_pattern=url_pattern, url_dict=url_dict, dynamic_vars=dynamic_vars,
                                         _route_title=title,    f_w_r = path.f_w_r,  from_routing=True, **_properties)
-        logger.print(f"loaded {_cache[url_hash].__name__}, added to cache")
+        logger.print(f"loaded {_cache[url_hash].__class__.__name__}, added to cache")
       else:
         raise Exception('bad load_form called')
       if _current_form is _cache[url_hash]: # this accounts for a slow form load and a super quick navigation change!
@@ -217,7 +217,7 @@ class route():
 
         if route:
           if not from_routing:
-            raise Exception(f'{self.__name__} is a route form and was not loaded from routing - check the docs - or set route=False to ignore routing behaviour')
+            raise Exception(f'{self.__class__.__name__} is a route form and was not loaded from routing - check the docs - or set route=False to ignore routing behaviour')
           global _current_form
           _current_form = self #this is the form that should be displayed
 
@@ -327,8 +327,8 @@ def add_to_cache(url_hash, form):
   """the form should be initiated 
   useful if you have a form instance and want to add it to cache without navigating to it
   """
-  logger.print(f'adding {url_hash} to cache with {form.__name__}')
   if form:
+    logger.print(f'adding {url_hash} to cache with {form.__class__.__name__}')
     _cache[url_hash] = form
 
 
