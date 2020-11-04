@@ -8,6 +8,12 @@ HashRouting - a dependency for anvil.works that allows navigation in apps
 |Live Example: |[hash-routing-example.anvil.app](https://hash-routing-example.anvil.app/) |
 |Example Clone Link with dependency: | [<img src="https://anvil.works/img/forum/copy-app.png" height='40px'>](https://anvil.works/build#clone:JVKXENWGKTU6IO7Y=O62PB7QCYEEU4ZBDTJQ6V6W4%7cZKNOF5FRVLPVF4BI=JHFO3AIV2GTM5ZP4FPFL3SMI)|
 
+___
+
+_(Brave Browser: if using brave browser in Anvil's IDE then you will need to turn off brave's sheild for anvil.works)_
+
+___
+
 - **Contents**
   - [Introduction](#introduction)
   - [Main Form](#main-form)
