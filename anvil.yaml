@@ -9,10 +9,10 @@ metadata: {}
 startup_form: null
 native_deps: {head_html: "<script>\n// need to think about what happens if we visit\
     \ a differnent web page then return to this page!\n\nsetUp()\n  \nfunction setUp(e)\
-    \ {\n  let last_known_pos = Number(sessionStorage.getItem('currentPos'));\n  let\
-    \ state = window.history.state;\n  if(state===null || jQuery.isEmptyObject(state)){\
+    \ {\n  var last_known_pos = Number(window.sessionStorage.getItem('currentPos'));\n\
+    \  var state = window.history.state;\n  if(state===null || jQuery.isEmptyObject(state)){\
     \  \n    state = {}\n    state.pos = last_known_pos\n    state.url = window.location.hash\n\
-    \    window.history.replaceState(state,'')  \n  };\n  sessionStorage.setItem('currentPos',\
+    \    window.history.replaceState(state,'')  \n  };\n  window.sessionStorage.setItem('currentPos',\
     \ state.pos);\n};\n\n\nvar defaultTitle = $(\"title\").text()\nvar currentPosition\
     \ = 0\nvar undo = 0\n\nwindow.onpopstate = onPopState;\nwindow.onpageshow = setUp;\n\
     //window.onbeforeunload = onBeforeUnload;\n  \n// App Unload Behaviour  \nfunction\
@@ -21,32 +21,32 @@ native_deps: {head_html: "<script>\n// need to think about what happens if we vi
     \ = '';\n};\n\n\nfunction getUrlHash(){\n  return window.location.hash.slice(1);\n\
     };\n\n  \n// when the window back or forward button is pressed onPopState is triggered\n\
     // a popstate is also triggered from a change in the URL in this case the window.history.state\
-    \ will be None\nfunction onPopState(e) {\n  let state = e.state;\n  const prevPos\
-    \ = Number(sessionStorage.getItem('currentPos'))\n  if (state){\n      window.history.replaceState(state,'',state.url)\n\
-    \      window.undo = prevPos - state.pos  //this line is the problem1!!!!\n  \
-    \    sessionStorage.setItem('currentPos', state.pos)\n    }\n  else {\n    //\
-    \ new url equivalent to push state\n    const pos = prevPos + 1\n    const url\
-    \ = window.location.hash\n    sessionStorage.setItem('currentPos', pos)\n    state\
-    \ = {url: url, pos: pos}\n    window.undo = -1\n    window.history.replaceState(state,'',state.url)\n\
+    \ will be None\nfunction onPopState(e) {\n  var state = e.state;\n  var prevPos\
+    \ = Number(window.sessionStorage.getItem('currentPos'))\n  if (state){\n     \
+    \ window.history.replaceState(state,'',state.url)\n      window.undo = prevPos\
+    \ - state.pos  //this line is the problem1!!!!\n      window.sessionStorage.setItem('currentPos',\
+    \ state.pos)\n    }\n  else {\n    // new url equivalent to push state\n    var\
+    \ pos = prevPos + 1\n    var url = window.location.hash\n    window.sessionStorage.setItem('currentPos',\
+    \ pos)\n    state = {url: url, pos: pos}\n    window.undo = -1\n    window.history.replaceState(state,'',state.url)\n\
     \    \n  }\n  //console.log(state)\n  anvil.call($('.content')[0], \"on_navigation\"\
     )\n};\n \n\nfunction stopUnload(){\n  window.onpopstate = () => {};  // unbind\
     \ onpopstate\n  window.history.go(window.undo);  // reverse the navigation\n \
-    \ setTimeout(function() { \n    window.onpopstate = onPopState; \n    sessionStorage.setItem('currentPos',\
+    \ setTimeout(function() { \n    window.onpopstate = onPopState; \n    window.sessionStorage.setItem('currentPos',\
     \ window.history.state.pos)\n  }, 100)  //delay rebind while the go is executed\n\
-    \  \n};\n  \nfunction pushState(url) {\n    const pos = Number(sessionStorage.getItem('currentPos'))\
-    \ + 1\n    const state = {url: url, pos: pos}\n  \tsessionStorage.setItem('currentPos',\
+    \  \n};\n  \nfunction pushState(url) {\n    var pos = Number(window.sessionStorage.getItem('currentPos'))\
+    \ + 1\n    var state = {url: url, pos: pos}\n  \twindow.sessionStorage.setItem('currentPos',\
     \ pos);\n\twindow.history.pushState(state, '', url)\n  \twindow.undo = -1\n  \
-    \  //console.log(state)\n};\n  \nfunction replaceState(url) {\n  \tconst state\
-    \ = window.history.state\n    state.url = url\n\twindow.history.replaceState(state,\
+    \  //console.log(state)\n};\n  \nfunction replaceState(url) {\n  \tvar state =\
+    \ window.history.state\n    state.url = url\n\twindow.history.replaceState(state,\
     \ '', url)    \n  \twindow.undo = 0 // a little pointless since cancelling unload\
-    \ will revert to this url\n};\n\nfunction replaceUrlNotState(url) {\n  \tconst\
-    \ state = window.history.state\n    window.history.replaceState(state, '' ,url)\n\
-    \    window.undo = 0  \n};\n\n  \nfunction setTitle(title) {\n  if (title ===\
-    \ null){\n    $(\"title\").text(window.defaultTitle)\n  }\n  else{\n    $(\"title\"\
-    ).text(title)\n  };\n};\n  \n\nfunction reloadPage() {\n  document.location.reload();\n\
-    }\n\nfunction goBack() {\n  window.history.back();\n}\n\nfunction goTo(x) {\n\
-    \  window.history.go(x);\n}\n\nfunction triggerRefresh() {\n  $(this).off('click');\n\
-    \  $(\"#session-expired-modal button\").trigger('click');\n}\n  \nfunction sessionExpiredHandler(reload_hash,\
+    \ will revert to this url\n};\n\nfunction replaceUrlNotState(url) {\n  \tvar state\
+    \ = window.history.state\n    window.history.replaceState(state, '' ,url)\n  \
+    \  window.undo = 0  \n};\n\n  \nfunction setTitle(title) {\n  if (title === null){\n\
+    \    $(\"title\").text(window.defaultTitle)\n  }\n  else{\n    $(\"title\").text(title)\n\
+    \  };\n};\n  \n\nfunction reloadPage() {\n  document.location.reload();\n}\n\n\
+    function goBack() {\n  window.history.back();\n}\n\nfunction goTo(x) {\n  window.history.go(x);\n\
+    }\n\nfunction triggerRefresh() {\n  $(this).off('click');\n  $(\"#session-expired-modal\
+    \ button\").trigger('click');\n}\n  \nfunction sessionExpiredHandler(reload_hash,\
     \ allow_cancel) {\n  if (reload_hash) {\n    $(\"#session-expired-modal button\"\
     ).removeClass('refresh')\n      .off('click').on('click', reloadPage)\n  } else\
     \ {\n    $(\"#session-expired-modal button\").addClass('refresh')\n      .off('click')\n\
@@ -59,17 +59,17 @@ native_deps: {head_html: "<script>\n// need to think about what happens if we vi
     \ = () => {};  // unbind onbeforeunload\n  };\n  \n};\n\n  \nfunction setUnloadPopStateBehaviour(flag){\n\
     \  if (flag){\n    window.onpopstate = unloadPopStateTemp;\n  }\n  else {\n  \
     \  window.onpopstate = onPopState;\n  };\n};\n  \n  \n  //Form Unload Behaviour\n\
-    \  \nfunction unloadPopStateTemp(e){\n    e.preventDefault()\n    let state =\
-    \ e.state;\n    //console.log(state)\n  const prevPos = Number(sessionStorage.getItem('currentPos'));\n\
+    \  \nfunction unloadPopStateTemp(e){\n    e.preventDefault()\n    var state =\
+    \ e.state;\n    //console.log(state)\n  var prevPos = Number(window.sessionStorage.getItem('currentPos'));\n\
     \  if (state){\n      temp_undo = prevPos - state.pos \n      window.onpopstate\
     \ = () => {};  // unbind onpopstate\n      window.history.go(temp_undo);  // reverse\
     \ the navigation\n      setTimeout(function() { \n      window.onpopstate = unloadPopStateTemp;\
     \ \n      }, 100)  //delay rebind while the go is executed\n  }\n  else {\n  \
     \  // the user is determined to navigate away and has changed the url manually\
-    \ so let them!\n    // Not letting them will break the the app... \n    const\
-    \ pos = Number(sessionStorage.getItem('currentPos')) + 1;\n    const url = window.location.hash\n\
-    \    sessionStorage.setItem('currentPos', pos)\n    state = {url: url, pos: pos}\n\
-    \    window.history.replaceState(state,'')\n    window.onbeforeunload = () =>\
-    \ {}; \n    window.location.reload() \n  };\n};\n  \n  \n</script>\n"}
+    \ so let them!\n    // Not letting them will break the the app... \n    var pos\
+    \ = Number(window.sessionStorage.getItem('currentPos')) + 1;\n    var url = window.location.hash\n\
+    \    window.sessionStorage.setItem('currentPos', pos)\n    state = {url: url,\
+    \ pos: pos}\n    window.history.replaceState(state,'')\n    window.onbeforeunload\
+    \ = () => {}; \n    window.location.reload() \n  };\n};\n  \n  \n</script>\n"}
 db_schema: []
 renamed: true
