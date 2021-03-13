@@ -7,19 +7,6 @@ name: HashRouting
 runtime_options: {version: 2, server_version: python2-sandbox, client_version: '3'}
 metadata: {}
 startup_form: null
-native_deps: {head_html: "<script>\n//  hack because anvil resets the state object\
-    \ on page load so store this in native libraries before it gets reset\nvar prevState\
-    \ = window.history.state;\n\n//  adjust behavior of refresh trigger \nfunction\
-    \ triggerRefresh() {\n  $(this).off('click');\n  $(\"#session-expired-modal button\"\
-    ).trigger('click');\n}\n\nfunction reloadPage() {\n  location.reload();\n}\n \
-    \ \nfunction sessionExpiredHandler(reload_hash, allow_cancel) {\n    if (reload_hash)\
-    \ {\n        $(\"#session-expired-modal button\").removeClass(\"refresh\").off(\"\
-    click\").on(\"click\", reloadPage);\n    } else {\n        $(\"#session-expired-modal\
-    \ button\").addClass(\"refresh\").off(\"click\");\n    }\n    if (!allow_cancel)\
-    \ {\n        $(\"#session-expired-modal button\").css(\"display\", \"none\");\n\
-    \        $(\"#session-expired-modal\").off(\"click\", triggerRefresh).on(\"click\"\
-    , triggerRefresh);\n    } else {\n        $(\"#session-expired-modal button\"\
-    ).removeAttr(\"style\");\n        $(\"#session-expired-modal\").off(\"click\"\
-    , triggerRefresh);\n    }\n}\n</script>"}
+native_deps: {head_html: ''}
 db_schema: []
 renamed: true

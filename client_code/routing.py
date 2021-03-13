@@ -593,7 +593,8 @@ def on_session_expired(reload_hash=True, allow_cancel=True):
         raise TypeError(f"reload_hash must be a bool not {type(reload_hash)}")
     if type(allow_cancel) is not bool:
         raise TypeError(f"allow_cancel must be a bool not {type(allow_cancel)}")
-    _anvil.js.call_js("sessionExpiredHandler", reload_hash, allow_cancel)
+    from ._session_expired import session_expired_handler
+    session_expired_handler(reload_hash, allow_cancel)
 
 
 """Helper functions for load_form"""

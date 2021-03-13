@@ -1,10 +1,10 @@
-from anvil.js.window import document, window, history, location, prevState
+from anvil.js.window import document, window, history, location
 from time import sleep
 from anvil import get_open_form
 from ._logging import logger
 
 # re-initialise the state object which was overridden on load or this is a new session
-state = prevState or {"url": location.hash, "pos": 0}
+state = history.state or {"url": location.hash, "pos": 0}
 history.replaceState(state, "", state["url"])
 
 # undo and pos are used for unload behavior
