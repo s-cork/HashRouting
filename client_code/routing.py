@@ -594,6 +594,7 @@ def on_session_expired(reload_hash=True, allow_cancel=True):
     if type(allow_cancel) is not bool:
         raise TypeError(f"allow_cancel must be a bool not {type(allow_cancel)}")
     from ._session_expired import session_expired_handler
+
     session_expired_handler(reload_hash, allow_cancel)
 
 
