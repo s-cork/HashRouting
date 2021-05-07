@@ -15,6 +15,7 @@ _(Brave Browser: if using brave browser in Anvil's IDE then you will need to tur
 ___
 
 - **Contents**
+  - [Getting Started](#getting-started)
   - [Introduction](#introduction)
   - [Main Form](#main-form)
   - [All Route Forms](#all-route-forms)
@@ -43,6 +44,16 @@ ___
   - [Leaving the app](#leaving-the-app)
 
 ---
+## Getting Started
+
+HashRouting is made available as a library that you need to add to your own app as a dependency. To begin:
+
+1. Clone the HashRouting dependency [<img src="https://anvil.works/img/forum/copy-app.png" height='30px'>](https://anvil.works/build#clone:ZKNOF5FRVLPVF4BI=JHFO3AIV2GTM5ZP4FPFL3SMI)
+1. Open your app and choose `Dependencies` from settings (the Gear Menu ⚙)
+1. Add `HashRouting` as a dependency
+
+Refer to [documentation](https://anvil.works/docs/deployment/dependencies) to understand more about dependencies.
+
 ## Introduction
 
 An Anvil app is a Single Page App so when the user navigates through the app pages the URL does not change. The part of the URL before the `#` is used by the server to identify the app, while the part following the `#`, known as hash, is never sent to the server, is used only by the browser. 
