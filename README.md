@@ -146,10 +146,13 @@ Instead
 
 ```python
 # option 1
-set_url_hash('home') # anvil's built in method
+set_url_hash('articles') # anvil's built in method
+
+# or an empty string to navigate to home page
+set_url_hash('')
 
 # option 2
-routing.set_url_hash('home') #routing's set_url_method has some bonus features... 
+routing.set_url_hash('articles') #routing's set_url_method has some bonus features... 
 
 # option 3
 routing.load_form(Home)
