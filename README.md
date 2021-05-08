@@ -446,6 +446,20 @@ class ArticleForm(ArticleFormTemplate):
 - Think `f strings` without the f
 - Anything in curly braces should be an item from `url_keys`
 
+You can also dynamically set the page title, for example, to values loaded from the database.
+
+```python
+from anvil.js.window import document
+
+@routing.route('article', url_keys=['id'])
+class ArticleForm(ArticleFormTemplate):
+  def __init__(self, **properties):
+    self.item = anvil.server.call('get_article', article_id=self.url_dict['id'])
+    document.title = f"{self.item['title']} | RoutingExample'"
+    
+    self.init_components(**properties)
+```
+
 ---
 
 
