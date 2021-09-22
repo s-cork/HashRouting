@@ -1,5 +1,8 @@
 dependencies: []
-services: []
+services:
+- source: /runtime/services/tables.yml
+  client_config: {}
+  server_config: {}
 startup: {type: module, module: routing}
 package_name: HashRouting
 allow_embedding: false
@@ -8,5 +11,5 @@ runtime_options: {version: 2, server_version: python2-sandbox, client_version: '
 metadata: {}
 startup_form: null
 native_deps: {head_html: ''}
-db_schema: []
+db_schema: {}
 renamed: true
