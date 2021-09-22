@@ -1,4 +1,15 @@
-from anvil.js.window import jQuery as _S, location
+# SPDX-License-Identifier: MIT
+#
+# Copyright (c) 2021 The Anvil Extras project team members listed at
+# https://github.com/anvilistas/anvil-extras/graphs/contributors
+#
+# This software is published at https://github.com/anvilistas/anvil-extras
+
+__version__ = "1.6.0"
+
+
+from anvil.js.window import jQuery as _S
+from anvil.js.window import location
 
 modal = _S("#session-expired-modal")
 modal_button = _S("#session-expired-modal .modal-footer button")

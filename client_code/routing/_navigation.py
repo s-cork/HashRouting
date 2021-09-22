@@ -1,6 +1,17 @@
-from anvil.js.window import document, window, history, location
+# SPDX-License-Identifier: MIT
+#
+# Copyright (c) 2021 The Anvil Extras project team members listed at
+# https://github.com/anvilistas/anvil-extras/graphs/contributors
+#
+# This software is published at https://github.com/anvilistas/anvil-extras
+
+__version__ = "1.6.0"
+
 from time import sleep
+
 from anvil import get_open_form
+from anvil.js.window import document, history, location, window
+
 from ._logging import logger
 
 # re-initialise the state object which was overridden on load or this is a new session
@@ -32,7 +43,9 @@ def onPopState(e):
     if on_navigation is not None:
         on_navigation()
     else:
-        logger.print("the open form is not using '@main_router' or has no 'on_navigation' method")
+        logger.print(
+            "the open form is not using '@main_router' or has no 'on_navigation' method"
+        )
 
 
 window.onpopstate = onPopState

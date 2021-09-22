@@ -1,14 +1,10 @@
-"""
-    HashRouting
-    Copyright 2020 Stu Cork
+# SPDX-License-Identifier: MIT
+#
+# Copyright (c) 2021 The Anvil Extras project team members listed at
+# https://github.com/anvilistas/anvil-extras/graphs/contributors
+#
+# This software is published at https://github.com/anvilistas/anvil-extras
 
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-
-        http://www.apache.org/licenses/LICENSE-2.0
-
-    Source code published at https://github.com/s-cork/HashRouting
-"""
+__version__ = "1.6.0"
 
 from ._routing import *

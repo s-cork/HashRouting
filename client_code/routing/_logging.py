@@ -1,13 +1,25 @@
+# SPDX-License-Identifier: MIT
+#
+# Copyright (c) 2021 The Anvil Extras project team members listed at
+# https://github.com/anvilistas/anvil-extras/graphs/contributors
+#
+# This software is published at https://github.com/anvilistas/anvil-extras
+
+__version__ = "1.6.0"
+
+
 class Logger:
-    def __init__(self, debug, msg=""):
+    def __init__(self, debug, msg="", save=False):
         self.debug = debug
         self.msg = msg
+        self.save = save
         self._log = [(msg,)]
 
     def print(self, *args, **kwargs):
         if self.debug:
             print(self.msg, *args, **kwargs) if self.msg else print(*args, **kwargs)
-        self._log.append(args)
+        if self.save:
+            self._log.append(args)
 
     def show_log(self):
         log_rows = [" ".join(str(arg) for arg in args) for args in self._log]
