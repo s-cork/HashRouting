@@ -228,7 +228,7 @@ def set_title(title):
   anvil.get_open_form().title.text = title
 ```
 
-Then, in ever form that is a routing target, you need to tell the manager what sidebar links and title to display.  Multiple forms can use the same set of sidebar links.
+Then, in every form that is a routing target, you need to tell the manager what sidebar links and title to display.  Multiple forms can use the same set of sidebar links.
 
 ```python
   def form_show(self, **event_args):
