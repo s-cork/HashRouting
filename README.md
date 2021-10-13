@@ -22,7 +22,7 @@ ___
   - [Home form](#home-form)
   - [Error form (Optional)](#error-form-optional)
   - [Navigation](#navigation)
-  - [Changing Main Form](#changing-main-form)
+  - [Changing Main Form](#changing-the-main-form)
   - [Dynamic Urls](#dynamic-urls)
   - [List of Methods](#list-of-methods)
 - [Notes and Examples](#notes-and-examples)
@@ -192,18 +192,50 @@ routing.load_form(ArticleForm, id=3)
 
 ---
 
-## Changing Main Form
+## Changing The Main Form
 
-In a more complex app, it's common that you want the main form's sidebar links and/or title to change based on the current page being shown.  There are many ways of doing this with the routing library.  This will show one basic approach that can be customized.
+In a more complex app, it's common that you want the main form's sidebar links and/or title to change based on the current page being shown.  There are many ways of doing this with the routing library.  This will show one basic approach that can be customized to suit your needs.
 
-
-
+Create a client module to manage the main form changes.  In this example, the module is called Manager and contains functions for changing sidebar links and the title.  This code depends on the main form  having a column panel called column_panel_1 for the sidebar links, and a label called title for the title. 
 
 ```python
-# Banned
-get_open_form().content_panel.clear()
-get_open_form().content_panel.add_component(Form1())
-# This will result in an Exception('Form1 is a route form and was not loaded from routing')
+import anvil
+from anvil_extras import routing
+
+_sidelinks = {
+  'home': [{'text': 'About', 'url': 'about'}, {'text': 'News', 'url': 'news'}],
+  'news': [{'text': 'Last Month', 'url': 'last-month'}, {'text': 'Home', 'url': ''}]
+}
+
+def setup_sidelinks(id):
+  if id in _sidelinks:
+    links_panel = anvil.get_open_form().column_panel_1
+    
+    if links_panel.tag.current != id:
+      links_panel.tag.current = id
+      links_panel.clear()
+    
+      for link in _sidelinks[id]:
+        sidelink = anvil.Link(text=link['text'])
+        sidelink.tag.url_hash = link['url']
+        sidelink.set_event_handler('click', _handle_click)
+        links_panel.add_component(sidelink)      
+        
+def _handle_click(sender, **event_args):
+  routing.set_url_hash(sender.tag.url_hash)
+  
+def set_title(title):
+  anvil.get_open_form().title.text = title
+```
+
+Then, in ever form that is a routing target, you need to tell the manager what sidebar links and title to display.  Multiple forms can use the same set of sidebar links.
+
+```python
+  def form_show(self, **event_args):
+    # We setup the side navigation links in form show, so that when the form is navigated
+    # away from and back again we can setup the links again.
+    Manager.setup_sidelinks('home')
+    Manager.set_title('Home')
 ```
 
 <br>
