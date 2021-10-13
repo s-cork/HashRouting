@@ -22,6 +22,7 @@ ___
   - [Home form](#home-form)
   - [Error form (Optional)](#error-form-optional)
   - [Navigation](#navigation)
+  - [Changing Main Form](#changing-main-form)
   - [Dynamic Urls](#dynamic-urls)
   - [List of Methods](#list-of-methods)
 - [Notes and Examples](#notes-and-examples)
@@ -186,6 +187,24 @@ routing.load_form(ArticleForm, id=3)
 ```
 
 `routing.set_url_hash` and `routing.load_form`  - have some additional kwargs that can be passed - some examples below.
+
+<br>
+
+---
+
+## Changing Main Form
+
+In a more complex app, it's common that you want the main form's sidebar links and/or title to change based on the current page being shown.  There are many ways of doing this with the routing library.  This will show one basic approach that can be customized.
+
+
+
+
+```python
+# Banned
+get_open_form().content_panel.clear()
+get_open_form().content_panel.add_component(Form1())
+# This will result in an Exception('Form1 is a route form and was not loaded from routing')
+```
 
 <br>
 
