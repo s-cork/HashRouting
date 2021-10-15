@@ -524,9 +524,17 @@ class Home(HomeTemplate):
 ```
 
 ___
-## Selected Links
+## Main Router Callbacks
 
-To use the Material Design role `'selected'` for navigation you can add an `on_navigation` method to your `MainForm`
+There are two call backs available for a `MainForm`.
+
+- `on_navigation`: called whenever the `url_hash` changes
+- `on_form_load`: called after a form is loaded into the content panel
+
+
+### `on_navigation` example:
+
+To use the Material Design role `'selected'` for navigation, create an `on_navigation` method in your `MainForm`.
 
 ```python
 @routing.main_router
@@ -557,9 +565,44 @@ class MainForm(MainFormTemplate):
 nav_args = {'url_hash':    url_hash, 
             'url_pattern': url_pattern, 
             'url_dict':    url_dict, 
-            'unload_form': form_that_was_unloaded #could be None if initial call
+            'unload_form': form_that_will_be_unloaded # could be None if initial call
             }
 ```
+
+
+### `on_form_load` example:
+
+If you want to use animation when a form is loaded you might use the `on_form_load` method.
+
+```python
+  def on_form_load(self, **nav_args):
+    # this method is called whenever the routing module has loaded a form into the content_panel
+    form = nav_args["form"]
+    animate(form, fade_in, duration=300)
+```
+
+**Nav Args provided:**
+```python
+nav_args = {'url_hash':    url_hash, 
+            'url_pattern': url_pattern, 
+            'url_dict':    url_dict, 
+            'form': form # the form that was loaded
+            }
+```
+
+Note if you wanted to use a fade out you could also use the `on_navigation` method.
+
+```python
+  def on_navigation_load(self, **nav_args):
+    # this method is called whenever the routing module has loaded a form into the content_panel
+    form = nav_args["unload_form"]
+    animate(form, fade_out, duration=300).wait() # wait for animation before continuing
+```
+
+
+---
+
+
 
 ___
 
