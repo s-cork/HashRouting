@@ -5,11 +5,9 @@
 #
 # This software is published at https://github.com/anvilistas/anvil-extras
 
-__version__ = "1.6.0"
+__version__ = "1.9.0"
 
 from anvil.js.window import jQuery as _S
-
-from . import _navigation
 
 alert_modal = _S("#alert-modal")
 
@@ -28,5 +26,7 @@ def handle_alert_unload() -> bool:
         # bootstrap alerts have a backdrom of static when not dismissible
         alert_modal.modal("hide")
         return False
+    from . import _navigation
+
     _navigation.stopUnload()
     return True
