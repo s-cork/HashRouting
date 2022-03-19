@@ -5,33 +5,17 @@
 #
 # This software is published at https://github.com/anvilistas/anvil-extras
 
-__version__ = "1.9.0"
+__version__ = "2.0.1"
+
+from ..logging import DEBUG, INFO
+from ..logging import Logger as _Logger
 
 
-class Logger:
-    def __init__(self, debug, msg="", save=False):
-        self.debug = debug
-        self.msg = msg
-        self.save = save
-        self._log = [(msg,)]
-
-    def print(self, *args, **kwargs):
-        if self.debug:
-            print(self.msg, *args, **kwargs) if self.msg else print(*args, **kwargs)
-        if self.save:
-            self._log.append(args)
-
-    def show_log(self):
-        log_rows = [" ".join(str(arg) for arg in args) for args in self._log]
-        return "\n".join(log_rows)
+class Logger(_Logger):
+    def __setattr__(self, attr: str, value) -> None:
+        if attr == "debug":  # backwards compatability
+            return _Logger.__setattr__(self, "level", DEBUG if value else INFO)
+        return _Logger.__setattr__(self, attr, value)
 
 
-logger = Logger(debug=False, msg="#routing:")
-# set to false if you don't wish to debug. You can also - in your main form - do routing.logger.debug = False
-_callable = type(lambda: None)
-
-
-def log(f: _callable):
-    if not logger.debug:
-        return
-    logger.print(f())
+logger = Logger("#routing", format="{name}: {msg}", level=INFO)

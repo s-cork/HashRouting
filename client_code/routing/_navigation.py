@@ -10,9 +10,8 @@ from functools import wraps
 from anvil.js.window import history, location, window
 
 from . import _router
-from ._logging import logger
 
-__version__ = "1.9.0"
+__version__ = "2.0.1"
 
 # re-initialise the state object which was overridden on load or this is a new session
 state = history.state or {"url": location.hash, "pos": 0}
