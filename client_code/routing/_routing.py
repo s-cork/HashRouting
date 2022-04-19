@@ -5,7 +5,7 @@
 #
 # This software is published at https://github.com/anvilistas/anvil-extras
 
-__version__ = "1.8.1"
+__version__ = "1.9.0"
 
 
 from collections import namedtuple as _namedtuple
@@ -119,7 +119,7 @@ def main_router(Cls):
                 url_hash, url_pattern, url_dict = get_url_components()
 
             logger.print(
-                f"on_navigation triggerd\nurl_hash    = {url_hash}"
+                f"on_navigation triggered\nurl_hash    = {url_hash}"
                 f"\nurl_pattern = {url_pattern}\nurl_dict    = {url_dict}"
             )
 
@@ -515,13 +515,13 @@ def set_url_hash(
         url_hash, url_pattern=url_pattern, url_dict=url_dict
     )
 
-    if url_hash == get_url_hash() and url_hash in _cache and _current_form is not None:
-        return  # should not continue if url_hash is identical to the addressbar hash!
-        # but do continue if the url_hash is not in the cache i.e it was manually removed
-
     # remove from cache
     if not load_from_cache:
         remove_from_cache(url_hash)
+
+    if url_hash == get_url_hash() and url_hash in _cache and _current_form is not None:
+        return  # should not continue if url_hash is identical to the addressbar hash!
+        # but do continue if the url_hash is not in the cache i.e it was manually removed
 
     if set_in_history and not replace_current_url:
         logger.print(
