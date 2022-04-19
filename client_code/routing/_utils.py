@@ -5,6 +5,8 @@
 #
 # This software is published at https://github.com/anvilistas/anvil-extras
 
+from collections import namedtuple
+
 import anvil
 from anvil.js.window import location
 
@@ -20,6 +22,9 @@ def get_url_components(url_hash=None):
     if url_hash is None:
         # url_hash = anvil.get_url_hash()  #changed since anvil decodes the url_hash
         url_hash = location.hash[1:]  # without the hash
+    elif isinstance(url_hash, str):
+        url_hash = url_hash if not url_hash.startswith("#") else url_hash[1:]
+
     if isinstance(url_hash, dict):
         # this is the case when anvil converts the url hash to a dict automatically
         url_pattern = ""
@@ -94,3 +99,42 @@ def _get_url_hash(url_pattern, url_dict):
     )
     url_params = "?" + url_params if url_params else ""
     return url_pattern + url_params
+
+
+def _as_frozen_str_iterable(obj, attr, allow_none=False, factory=frozenset):
+    if isinstance(obj, str) or (allow_none and obj is None):
+        return factory([obj])
+    rv = []
+    for o in obj:
+        if not isinstance(o, str):
+            msg = f"expected an iterable of strings or a string for {attr} argument"
+            raise TypeError(msg)
+        rv.append(o)
+    return factory(rv)
+
+
+_RouteInfoBase = namedtuple(
+    "route_info",
+    ["form", "template", "url_pattern", "url_keys", "title", "fwr", "url_parts"],
+)
+
+TemplateInfo = namedtuple("template_info", ["form", "path", "condition"])
+RedirectInfo = namedtuple("redirect_info", ["redirect", "path", "condition"])
+
+
+class RouteInfo(_RouteInfoBase):
+    @staticmethod
+    def as_dynamic_var(part):
+        if len(part) > 1 and part[0] == "{" and part[-1] == "}":
+            return part[1:-1], True
+        return part, False
+
+    def __new__(cls, form, template, url_pattern, url_keys, title, fwr, url_parts=()):
+        if url_pattern.endswith("/"):
+            url_pattern = url_pattern[:-1]
+
+        url_parts = tuple(cls.as_dynamic_var(part) for part in url_pattern.split("/"))
+
+        return _RouteInfoBase.__new__(
+            cls, form, template, url_pattern, url_keys, title, fwr, url_parts
+        )
