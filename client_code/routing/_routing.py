@@ -573,6 +573,7 @@ def load_form(
     load_form(ArticleForm, item=item)          #  where 'id' is a key in item...
     load_form(AritcleForm, id=3, item=item)    #  as above but this is quicker if item is a live_object_proxy as it prevents a server call
     """
+    global _warning
     if not _warning:
         print("""WARNING: You are on the Published branch of HashRouting.
 The Published branch will soon match anvil_extras where `routing.load_form()` is deprecated.
